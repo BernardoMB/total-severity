@@ -559,15 +559,16 @@ theme <- theme(
   legend.box.just = "right",
   # Legend boxes
   legend.key = element_rect(colour = 'black', fill = 'transparent', size = .5, linetype=0),
-  legend.key.width = unit(3.5, "lines"),
+  legend.key.width = unit(1.5, "lines"),
   legend.background = element_rect(fill="transparent"),
   # Center plot title
-  plot.title = element_text(hjust = 0.5)
+  plot.title = element_text(hjust = 0.5),
+  legend.text=element_text(size=8)
 )
 xAxis <- geom_hline(yintercept = 0, size = .1)
 yAxis <-geom_vline(xintercept = 0, size = .1)
 labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
-title <- ggtitle("Intervalos de confianza para \n la distribucion de la severidad total")
+title <- ggtitle("Intervalos de confianza al 95% para \n la distribución de la severidad total")
 
 fun2 <- geom_step(data=data.frame(ordenados,limsup, type="1"), aes(x=ordenados, y=limsup, colour=type, linetype=type, size=type)) 
 fun1 <- geom_step(data=data.frame(ordenados,Fn, type="3"), aes(x=ordenados, y=Fn, colour=type, linetype=type, size=type)) 
@@ -582,7 +583,7 @@ cdf.layer <- geom_path(
 an <- labs(TeX('Cota superior'), TeX('Teórica'),TeX('Empírirca'), TeX('Cota inferior'))
 
 xlim <- xlim(0,60000)
-ylim <- ylim(0.857,1)
+ylim <- ylim(0.88,1)
 color <- TRUE
 if (color) {
   colors <- c("#800080","#ffa500","#add8e6","purple")
