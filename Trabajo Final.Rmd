@@ -509,7 +509,7 @@ theme <- theme(
 )
 if (colorImp) emp.color <- "#add8e6" else emp.color <- "black"
 ggplot() + stat_ecdf(data=df, aes(x=severities), geom = "step", color=emp.color) +
-  labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$')) +
+  labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$')) + asinth.axis + xAxis + yAxis +
   ggtitle("Distribución empírica de la severidad total") + theme + cdf.ylim
 ```
 
@@ -579,7 +579,7 @@ if (colorImp) {
   linetypes <-c(1,2,3,4)
 }
 
-p+theme+xAxis+yAxis+labels+title+cdf.layer+fun1+fun2+fun3+cdf.xlim+cdf.ylim+
+p+theme+xAxis+yAxis+labels+title+cdf.layer+fun1+fun2+fun3+cdf.xlim+cdf.ylim+ asinth.axis +
 scale_colour_manual(
   #name="Name",
   name = NULL,
@@ -604,4 +604,63 @@ scale_size_manual(
 
 ```
 
+\section{2.1 Simulación de los pares $\left(T_i,x_i\right)$}
 
+Como la frecuencia de los eventos en un año se distribuye Poisson con media $\lambda_{Po}=`r lambda_po`$, entonces las diferencias de tiempo entre las ocurrencias de los eventos siguen una distribución exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$ de esta manera, media la simulación de variables aleatorias exponenciales se puden simular las fechas de ocurrencias de los siniestros. A continución se muestran las primeras $10$ realizaciones de las fechas de los siniestros y sus montos (tiempo medido en años):
+
+```{r simulated pairs, echo=FALSE, warning=FALSE, message=FALSE}
+
+rate   <- lambda_po
+start  <- 2018
+# Tiempo interarribos
+per <- rexp(10000, rate=rate)
+# Obtener las fechas de los cinistros
+per[1] <- per[1]+start
+# Fechas de los siniestros
+PerTot <- cumsum(per)
+# Montos de los siniestros
+severities1 <- rexp(10000 ,rate=lambda_exp)
+severities2 <- sort(unique(severities1))
+
+convert.seconds <- function(x) {
+  a <- x-2018
+  b <- a*31556952
+  c <- as.POSIXct(b, origin = "2018-01-01", tz = "UTC")
+  as.character(c)
+}
+dates <- sapply(PerTot, convert.seconds)
+
+
+pairs.df <- data.frame(dates, severities1)
+names(pairs.df) <- c("Fechas", "Montos")
+kable(head(pairs.df, 10))
+```
+
+A continuación se muestra la serie de tiempo generada
+
+```{r, serie de tiempo, echo=FALSE}
+# Ploting time series
+# https://www.neonscience.org/dc-time-series-plot-ggplot-r
+fechonsias <- pairs.df[[1]]
+funciononsia <- function(x) {
+  value <- NA
+  if (match(x,fechonsias) %% 500 !=0) {
+    value <- NA
+  } else {
+    fechaSeparada <- strsplit(as.character(x), " ")
+    value <- fechaSeparada[[1]][1]
+  }
+  value
+}
+fechunias <- sapply(fechonsias, funciononsia)
+montunios <- pairs.df[[2]]
+dfonsio <- data.frame(fechunias, montunios)
+names(dfonsio) <- c("fechonson", "montonson")
+
+ggplot(data = dfonsio, aes(x = c(1:10000), y = montonson, group = 1)) + 
+  geom_bar(stat="identity", color = "#00AFBB", size = .1, alpha=.1, na.rm = TRUE) +
+  geom_point(size=.005, color="blue", alpha=0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size=5)) + 
+  scale_x_discrete(limits=dfonsio[[1]], na.translate = FALSE) + xlab("Fecha") + ylab("Monto") + 
+  geom_hline(yintercept=1000, size=.5, color="green")
+```
