@@ -1,0 +1,180 @@
+---
+title: "Proyecto final 2da Parte"
+author: "Anhara Gámez"
+date: "16/5/2018"
+output: html_document
+---
+
+2.1 Simula 10000 pares (Ti, Xi), donde Ti es la fecha de la iésima observación y Xi el monto del iésimo evento. Utiliza las distribuciones de frecuencia y severidad de la pregunta anterior. 
+
+```{r simulated values, echo=FALSE, warning=FALSE, message=FALSE}
+
+rate   <- 0.1
+start  <- 2018
+per <- rexp(10000,rate=rate)
+per[1] <- per[1]+start
+PerTot <- cumsum(per)
+severities1 <- rexp(10000,rate=1/10000)
+severities2<-sort(unique(severities1))
+```
+
+2.2 Grafica la serie de tiempo que generaste. Comenta si observas dependencias, efectos estacionales, etc.
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+plot(PerTot,severities1,type="h")
+
+```
+
+2.3 Construye y grafica la distribución empírica de la severidad y, establece intervalos (regiones) de confianza para la verdadera distribución de la severidad. Hint: recuerda las propiedades de las distribuciones empíricas apoyadas en la distribución binomial.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+
+# Distribucion empirica 
+plot(ecdf(severities1), main="Distribucion empirica")
+empirica<-ecdf(severities1)
+Fn<-empirica(severities1)
+
+plot(density(severities1))
+
+```
+
+2.4 Agrupa los datos apropiadamente y grafica el histograma correspondiente.
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+##Datos agrupados
+nj<-NULL
+agrupados1<-data.frame(cj_1=seq(0,max(severities2),5000), cj=seq(5000,max(severities2)+5000,5000))
+                      
+for(i in 1:length(agrupados1$cj_1)){
+  nj[i]<-sum(severities1<agrupados1$cj[i] & agrupados1$cj_1[i] <= severities1)
+}
+agrupados1[3]<-nj
+row.names(agrupados1)<-c(1:length(agrupados1$V3))
+
+ agrupados<-agrupados1
+k=1
+while(agrupados$V3[k]>=5){
+  aux <- k
+k=k+1
+}
+
+  aux2<-0
+  for(i in 1:(length(agrupados$V3)-aux)){
+    aux2<-aux2+agrupados$V3[aux+i]
+  }
+agrupados$V3[aux+1]<-aux2
+
+for(i in 1:(length(agrupados$cj)-aux-1)){
+   agrupados$V3[aux+1+i]<-0
+}
+
+agrupados$cj[aux+1]<- agrupados$cj[length(agrupados$cj_1)]
+   
+ agrupados<-subset(agrupados, agrupados$V3>0) 
+ agrupados<-rbind(agrupados,1)
+ agrupados$cj_1[length(agrupados$V3)]<-agrupados$cj[length(agrupados$V3)-1]
+ agrupados$cj[length(agrupados$cj)]<-"inf"
+ agrupados$V3[length(agrupados$V3)]<-0
+
+##Histograma
+breaks<-seq(0,120000,by=5000)
+hist(severities2, breaks,main = "Histograma",xlab = "Monto",ylab = "Probabilidad")
+
+```
+
+2.5 Grafica el valor esperado limitado en cada valor observado. Comenta si tienes indicios de observar una distribución de cola pesada o ligera. Grafica igualmente la media en exceso evaluada en cada valor observado y realiza el mismo análisis. Finalmente, construye la fuerza de mortalidad (hazard rate) empírica y comenta.
+
+2.5
+
+Media limitada:
+
+```{r Media limitada, echo=FALSE, warning=FALSE, message=FALSE}
+
+##Media limitada:
+n=10000
+media_limitada<-NULL
+for(i in 1:length(severities2)){
+  u<-severities2[i]
+  media_limitada[i]<-(sum(severities1>u)*u + sum(severities1[severities1<=u]))/n
+}
+#plot(severities2,media_limitada, main="Media limitada", xlab="x", ylab="Media limitada")
+ggplot() +
+  geom_point(data=data.frame(severities2, media_limitada), aes(x=severities2, y=media_limitada), shape=0, color="#83d2e3") +
+labs(x="Montos",y="Media limitada") + title.theme +
+  ggtitle("Media limitada")
+```
+
+Media en exceso:
+
+```{r media en exceso, echo=FALSE, warning=FALSE}
+##Media en exceso
+media_exceso<-NULL
+for(i in 1:length(severities2)){
+  d<-severities2[i]
+  media_exceso[i]<- sum(severities1[severities1>d]-d)/sum(severities1>d)
+}
+#plot(severities2, media_exceso, main="Media en exceso", xlab="x", ylab="Media en exceso")
+ggplot() +
+  geom_point(data=data.frame(severities2, media_exceso), aes(x=severities2, y=media_exceso), shape=1, color="black") +
+labs(x="Montos",y="Media en exceso") + title.theme +
+  ggtitle("Media exceso")
+```
+
+Motalidad empirica:
+
+```{r mortalidad empirica, echo=FALSE, warning=FALSE}
+#Mortalidad empirica
+fn<-NULL
+mort_emp<-NULL
+for(i in 1:length(severities2)){
+  fn[i]<- empirica(severities2[i+1])-empirica(severities2[i])
+  mort_emp[i]<-fn[i]/(1-empirica(severities2[i]))
+  }
+#plot(severities2,mort_emp, main="Mortalidad empirica", xlab="x", ylab="Mortalidad empirica", color="#cf78b7")
+ggplot() +
+  geom_point(data=data.frame(severities2, mort_emp), aes(x=severities2, y=mort_emp), shape=2, color="#cf78b7") +
+labs(x="Montos",y="Mortalidad empirica") + title.theme +
+  ggtitle("Mortalidad empirica")
+```
+
+
+
+
+
+
+
+
+2.6 Realiza la prueba de bondad de ajuste ji-cuadrado para el modelo exponencial.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+##Estimo el parámetro para una exponencial por MV
+theta<-1/mean(severities1)
+E<-NULL
+E[1]<-10000*(pexp(5000,theta))
+for(i in 2:(length(agrupados$cj_1)-1)){
+  E[i]<-10000*(pexp(as.numeric(agrupados$cj[i]),theta)-pexp(as.numeric(agrupados$cj_1[i]),theta))
+}
+E[length(agrupados$cj_1)]=10000*(1-pexp(as.numeric(agrupados$cj_1[length(agrupados$cj_1)]),theta))
+agrupados[4]<-E
+
+Q<-NULL
+for(i in 1:(length(agrupados$cj_1))) {
+  Q[i]<-((as.numeric(agrupados$V3[i])-as.numeric(agrupados$V4[i]))^2)/as.numeric(agrupados$V3[i])
+}
+Q[length(agrupados$cj_1)]=0
+agrupados[5]<-Q
+sumaQ<-sum(Q)
+gl<-length(agrupados$cj_1)-3
+test<-qchisq(.95,gl)
+
+sumaQ<test
+##No rechazamos H0. Los datos provienen de una distribuci´ón exponencial.
+```
+
+2.7 Mediante el q-q plot, indica si el modelo ajustado sobreestima o subestima las probabilidades de eventos de monto alto. 
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+barplot(E)
+
+```
+

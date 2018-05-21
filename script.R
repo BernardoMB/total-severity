@@ -1,13 +1,5 @@
 library(ggplot2)
-
-
-
-
-
-
-
-
-
+library(latex2exp)
 
 # PDF Compound Poisson Distribution
 dpoiscomp <- function(x, lambda_po=4,lambda_exp=2) {
@@ -34,11 +26,6 @@ getValues.pdf.pois.comp <- function(x, lambda_po=4, lambda_exp=2) sapply(x, FUN=
 getValues.pdf.gamma.tras <- function(x, desp=1, alpha=4, beta=2) {
   dgamma(x-desp, shape = alpha, rate=beta)
 }
-
-
-
-
-
 
 # Create a plot
 p <- ggplot()
@@ -72,7 +59,7 @@ p + theme + xAxis + yAxis
 # Labels
 labels <- labs(x = TeX('$s$'), y = TeX('$f_S(s)$'))
 # Title
-title <- ggtitle("Densidad de la severidad total \n vs. \n aproximación")
+title <- ggtitle("Densidad de la severidad total \n vs. \n aproximaci?n")
 # Empty plot
 p + theme + xAxis + yAxis + labels + title
 # Number of different function to be ploted
@@ -105,7 +92,7 @@ if (color) {
   linetypes <-c(1,5)
 }
 # Legends
-an <- labs(TeX('Severidad total'), TeX('Aproximación'))
+an <- labs(TeX('Severidad total'), TeX('Aproximaci?n'))
 # Adjust scales on axes
 xlim <- xlim(0,80000)
 ylim <- ylim(0,.00001)
