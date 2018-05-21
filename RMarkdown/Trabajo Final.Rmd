@@ -26,7 +26,7 @@ library(knitr)
 library(kableExtra)
 
 # Color?
-colorImp <- TRUE 
+colorImp <- FALSE 
 ```
 
 \section{1.1 La severidad total}
