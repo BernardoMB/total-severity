@@ -1,6 +1,6 @@
 ---
 title: "Trabajo final de Calculo Actuarial III"
-author: "Bernardo Mondragon Brozon, Anjara Rueda"
+author: "Bernardo Mondragon Brozon, Anhara Rueda"
 date: "May 12, 2018"
 output: pdf_document
 ---
@@ -209,6 +209,7 @@ for(i in 1:n) {
 }
 # Imprimiendo solo 100
 severities[1:100]
+
 ```
 
 El histograma debe parecerse a la funcion de densidad de probabilidad (la linea punteada indica la seveidad promedio):
