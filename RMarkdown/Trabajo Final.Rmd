@@ -1034,6 +1034,7 @@ Los montos de los siniestros son los siguientes:
 
 3.1 Sobre los 10000 siniestros simulados en la pregunta anterior, considera ahora que aplicarán un deducible de $5,000 y un límite de $30,000. Construye ahora el archivo de indemnizaciones correspondiente. ¿Qué proporción de los datos originales tienes ahora? ¿Pudiste haber estimado esta proporción de manera analítica con la distribución exponencial?
 ```{r}
+
 ##TRUNCAMIENTO
 Indem<-montos
 for ( i in 1:10000){
@@ -1051,6 +1052,17 @@ Indemnizacion<-as.data.frame(Indem)
 head(Indemnizacion)
 
 Indem1<-subset(Indem,Indem !=0)
-
+Indem2<-subset(Indem1,Indem1 == 25000)
 ##El n´úmero de indemnizaciones que quedan despu´és del truncamiento y el l´ímite
 length(Indem1)
+length(Indem2)
+lik <-NULL
+for (i in 1:10000){
+  lik[i]= length(Indem2)*(exp(-30000)/exp(-5000))*sum(exp())
+}
+
+```
+
+
+
+
