@@ -27,6 +27,9 @@ library(kableExtra)
 
 # Color?
 colorImp <- TRUE
+# Colores chidos
+moradito <- "#be58a0"
+azulito <- "#00e6e6"
 ```
 
 \section{1.1 La severidad total}
@@ -99,7 +102,7 @@ yAxis <-geom_vline(xintercept = 0, size = .5)
 # Plot axes labels
 cdf.comp.pois.labels <- labs(x = TeX('$s$'), y = TeX('$F_S(s)$'))
 # Title
-cdf.comp.pois.title <- ggtitle("funcion de probabilidad acumulada \n de la severidad total")
+cdf.comp.pois.title <- ggtitle("Función de probabilidad acumulada \n de la severidad total")
 # Center title
 title.theme <- theme(plot.title = element_text(hjust = 0.5))
 
@@ -107,7 +110,7 @@ title.theme <- theme(plot.title = element_text(hjust = 0.5))
 asinth.axis <- geom_hline(yintercept=1, size=.1)
 
 # Color
-if (colorImp) cdf.comp.pois.color="#ffa500" else cdf.comp.pois.color="black"
+if (colorImp) cdf.comp.pois.color=moradito else cdf.comp.pois.color="black"
 
 # Create layer
 cdf.comp.pois.layer <- stat_function(
@@ -159,10 +162,10 @@ getValues.pdf.comp.pois <- function(x, lambda_po=4, lambda_exp=2) sapply(x, FUN=
 pdf.comp.pois.labels <- labs(x = TeX('$s$'), y = TeX('$f_S(s)$'))
 
 # Title
-pdf.comp.pois.title <- ggtitle("funcion de densidad de probabilidad \n de la severidad total")
+pdf.comp.pois.title <- ggtitle("Función de densidad de probabilidad \n de la severidad total")
 
 # Color
-if (colorImp) pdf.comp.pois.color <- "violet" else pdf.comp.pois.color <- "black"
+if (colorImp) pdf.comp.pois.color <- azulito else pdf.comp.pois.color <- "black"
 
 # Create layer
 pdf.comp.pois.layer <- stat_function(
@@ -209,7 +212,7 @@ for(i in 1:n) {
   }
 }
 # Imprimiendo solo 100
-severities[1:100]
+kable(matrix(severities[1:100],9))
 
 ```
 
@@ -217,9 +220,9 @@ El histograma debe parecerse a la función de densidad de probabilidad (la linea
 
 ```{r histogram, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 if (colorImp) {
-  hist.color <- "pink"
-  hist.fill <- "pink3"
-  hist.alpha <- "0.4"
+  hist.color <- moradito
+  hist.fill <- moradito
+  hist.alpha <- "0.2"
 } else {
   hist.color <- "black"
   hist.fill <- "white"
@@ -340,7 +343,7 @@ pdf.gam.layer <- stat_function(
 )
 # Colors and line types
 if (colorImp) {
-  aprox.color <- "purple3"
+  aprox.color <- moradito
   colors <- c(pdf.comp.pois.color,aprox.color)
   sizes <- c(.5,.5)
   linetypes <-c(1,1)
@@ -462,6 +465,7 @@ pdf2 <- stat_function(
 )
 # Colors and line types
 if (colorImp) {
+  aprox.color <- moradito
   colors <- c(pdf.comp.pois.color,aprox.color)
   sizes <- c(.5,.5)
   linetypes <-c(1,1)
@@ -572,7 +576,7 @@ theme <- theme(
   # Center plot title
   plot.title = element_text(hjust = 0.5)
 )
-if (colorImp) emp.color <- "#add8e6" else emp.color <- "black"
+if (colorImp) emp.color <- azulito else emp.color <- "black"
 ggplot() + stat_ecdf(data=df, aes(x=severities), geom = "step", color=emp.color) +
   labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$')) + asinth.axis + xAxis + yAxis +
   ggtitle("distribución empírica de la severidad total") + theme + cdf.ylim
@@ -635,7 +639,7 @@ cdf.layer <- geom_path(
 an <- labs(TeX('Cota superior'), TeX('teórica'),TeX('empírica'), TeX('Cota inferior'))
 
 if (colorImp) {
-  colors <- c("#800080","#ffa500","#add8e6","purple")
+  colors <- c("#800080", "#ffa500", "#add8e6","purple")
   sizes <- c(.4,2,1,.4)
   linetypes <- c(1,1,1,1)
 } else {
@@ -798,7 +802,7 @@ cdf.layer <- geom_path(
 an <- labs(TeX('Cota superior'), TeX('teórica'),TeX('empírica'), TeX('Cota inferior'))
 
 if (colorImp) {
-  colors <- c("#800080","#ffa500","#add8e6","purple")
+  colors <- c("#800080", "#ffa500", "#add8e6","purple")
   sizes <- c(.4,2,1,.4)
   linetypes <- c(1,1,1,1)
 } else {
@@ -838,9 +842,9 @@ Dado el numero de observaciones (simulaciones) $n=10000$, se tiene que la funci�
 Agrupando los montos de los siniestros en intervalos de longitud $5000$, se obtiene el siguinete histograma:
 ```{r histograma severidad, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 if (colorImp) {
-  hist.color <- "purple"
-  hist.fill <- "purple1"
-  hist.alpha <- "0.4"
+  hist.color <- moradito
+  hist.fill <- moradito
+  hist.alpha <- "0.2"
 } else {
   hist.color <- "black"
   hist.fill <- "white"
@@ -864,7 +868,7 @@ pdf.sev.layer <- stat_function(
   aes(x=c(0,10)),
   fun=dexp,
   args=list(rate=lambda_exp),
-  color="green"
+  color=azulito
 )
 
 hist.p2.sev <- ggplot() + xAxis + yAxis + title.theme + pdf.xlim + ylim(0,.0001) + geom_histogram(data=montos.df, aes(x=montos, y=.00000002*..count..), breaks=breaks, color=hist.color, fill=hist.fill, alpha=hist.alpha) + pdf.sev.layer +
@@ -877,67 +881,252 @@ hist.p2.sev
 
 Sea $M$ la variable aleatoria que indica el monto de un siniestro, entonces el valor esperado de $M$ limitado a $l$ está dada por
 
-$$  E\left( \min{M, l} \right)=\int_{0}^{l}\frac{m}{10000}e^{-\frac{m}{10000}} \, \mathrm{d}m=10000-(l+10000)e^{-\frac{l}{10000}} $$
+$$  E\left( \min{M, l} \right)=\int_{0}^{l}S_{x_1}(t) \, \mathrm{d}t=\int_{0}^{l} e^{-\lambda_{exp}t} \, \mathrm{d}t = \frac{1-e^{-\lambda_{exp}l}}{\lambda_{exp}} $$
 
-A continuación se presenta a la media limitada de los montos como función del limite:
+A continuacion se presenta a la \textbf{media limitada} de los montos como funcion del limite:
 
-```{r Media limitada, echo=FALSE, warning=FALSE, message=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
-severities2 <- sort(unique(montos))
-##Media limitada:
+```{r media limitada, echo=FALSE, warning=FALSE, message=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
+sortedSeverities <- sort(unique(montos))
+ 
+# Medias limitadas usando datos empiricos
 n=10000
-media_limitada<-NULL
-for(i in 1:length(severities2)){
-  u<-severities2[i]
-  media_limitada[i]<-(sum(montos>u)*u + sum(montos[montos<=u]))/n
+mediasLimitadas <- NULL
+for (i in 1:length(sortedSeverities)) {
+  u <- sortedSeverities[i]
+  mediasLimitadas[i] <- (sum(montos>u)*u + sum(montos[montos<=u]))/n
 }
-#plot(severities2,media_limitada, main="Media limitada", xlab="x", ylab="Media limitada")
-ggplot() +
-  geom_point(data=data.frame(severities2, media_limitada), aes(x=severities2, y=media_limitada), shape=0, color="#83d2e3") +
-labs(x="Montos",y="Media limitada") + title.theme +
-  ggtitle("Media limitada")
+
+# Media limitada analiticamente como funcion del limite
+limitedMean <- function(x) (1-exp(-lambda_exp*x))/(lambda_exp)
+
+types <- c("1","2")
+p.m <- ggplot(data.frame(type=types), aes(colour=type, linetype=type, size=type))
+theme <- theme(
+   # Leyend position
+   legend.position = c(1, 0),
+   legend.justification = c("right", "bottom"),
+   legend.box.just = "right",
+   # Legend boxes
+   legend.key = element_rect(colour = 'black', fill = 'transparent', size = .5, linetype=0),
+   legend.key.width = unit(1.5, "lines"),
+   legend.background = element_rect(fill="transparent"),
+   # Center plot title
+   plot.title = element_text(hjust = 0.5),
+   legend.text=element_text(size=8)
+ )
+ xAxis <- geom_hline(yintercept = 0, size = .1)
+ yAxis <-geom_vline(xintercept = 0, size = .1)
+ labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
+ title <- ggtitle("Funcion media limiatada")
+ 
+ points <- geom_point(
+   data=data.frame(sortedSeverities, mediasLimitadas, type="1"),
+   aes(x=sortedSeverities, y=mediasLimitadas, colour=type, linetype=type, size=type),
+   shape=0
+ )
+ 
+ curve <- geom_path(
+   data=data.frame(type="2"),
+   stat="function",
+   fun=limitedMean,
+   aes(colour=type, linetype=type, size=type)
+ )
+ 
+ an <- labs(TeX('Valores simulados'), TeX('Media limitada'))
+ 
+ if (colorImp) {
+   colors <- c(moradito,azulito)
+   sizes <- c(.3,1)
+   linetypes <- c(1,1)
+ } else {
+   colors <- c("black","black")
+   sizes <- c(1,1)
+   linetypes <-c(1,2)
+ }
+ 
+ p.m+theme+xAxis+yAxis+labs(x="Limite", y="Media limitada")+title+curve+points+xlim(0,80000)+ylim(0,10000)+ asinth.axis +
+ scale_colour_manual(
+   #name="Name",
+   name = NULL,
+   values = colors,
+   labels = an,
+   breaks = types
+ ) +
+ scale_linetype_manual(
+   #name="Name",
+   name = NULL,
+   values = linetypes,
+   labels = an,
+   breaks = types
+ ) +
+ scale_size_manual(
+   #name="Name",
+   name = NULL,
+   values = sizes,
+   labels = an,
+   breaks = types
+ )
 ```
 
-Media en exceso:
+Como los montos son distribuidos exponencialmente con media $E(x_1)=1/\lambda_{exp}$, no se observan indicios de una distribucion de cola pesada.
+ 
+ La \textbf{media en exceso} como funcion del umbral es la siguiente:
 
 ```{r media en exceso, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
-##Media en exceso
-media_exceso<-NULL
-for(i in 1:length(severities2)){
-  d<-severities2[i]
-  media_exceso[i]<- sum(montos[montos>d]-d)/sum(montos>d)
-}
-#plot(severities2, media_exceso, main="Media en exceso", xlab="x", ylab="Media en exceso")
-ggplot() +
-  geom_point(data=data.frame(severities2, media_exceso), aes(x=severities2, y=media_exceso), shape=1, color="black") +
-labs(x="Montos",y="Media en exceso") + title.theme +
-  ggtitle("Media exceso")
+ # Medias en exceso usando datos empiricos
+ mediasEnExceso <- NULL
+ for(i in 1:length(sortedSeverities)){
+   d <- sortedSeverities[i]
+   mediasEnExceso[i] <- sum(montos[montos>d]-d)/sum(montos>d)
+ }
+ 
+# Media limitada analiticamente como funcion del limite
+ excesMean <- function(x, param=1) param
+ 
+ types <- c("1","2")
+ p.m <- ggplot(data.frame(type=types), aes(colour=type, linetype=type, size=type))
+ theme <- theme(
+   # Leyend position
+   legend.position = c(1, 0),
+   legend.justification = c("right", "bottom"),
+   legend.box.just = "right",
+   # Legend boxes
+   legend.key = element_rect(colour = 'black', fill = 'transparent', size = .5, linetype=0),
+   legend.key.width = unit(1.5, "lines"),
+   legend.background = element_rect(fill="transparent"),
+   # Center plot title
+   plot.title = element_text(hjust = 0.5),
+   legend.text=element_text(size=8)
+ )
+ xAxis <- geom_hline(yintercept = 0, size = .1)
+ yAxis <-geom_vline(xintercept = 0, size = .1)
+ labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
+ title <- ggtitle("Funcion media en exceso")
+ 
+ points <- geom_point(
+   data=data.frame(sortedSeverities, mediasEnExceso, type="1"),
+   aes(x=sortedSeverities, y=mediasEnExceso, colour=type, linetype=type, size=type),
+   shape=1
+ )
+ 
+ curve <- geom_path(
+   data=data.frame(type="2"),
+   stat="function",
+   fun=excesMean,
+   args=list(param=10000),
+   aes(colour=type, linetype=type, size=type)
+ )
+ 
+ an <- labs(TeX('Valores simulados'), TeX('Media en exceso'))
+ 
+ p.m+theme+xAxis+yAxis+labs(x="Umbral", y="Media en exceso")+title+curve+points+xlim(0,80000)+ylim(0,15000)+ asinth.axis +
+ scale_colour_manual(
+   #name="Name",
+   name = NULL,
+   values = colors,
+   labels = an,
+   breaks = types
+ ) +
+ scale_linetype_manual(
+   #name="Name",
+   name = NULL,
+   values = linetypes,
+   labels = an,
+   breaks = types
+ ) +
+ scale_size_manual(
+   #name="Name",
+   name = NULL,
+   values = sizes,
+   labels = an,
+   breaks = types
+ )
 ```
 
-Motalidad empírica:
+Claramente los montos de los siniestros no son un fenomeno de colas pesadas, pues se observa que la media en exceso descrece.
+ 
+La \text{mortalidad empirica} como funcion del monto es la siguiente:
 
 ```{r mortalidad empirica, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
-#Mortalidad empirica
-fn<-NULL
-mort_emp<-NULL
-for(i in 1:length(severities2)){
-  fn[i]<- empirica(severities2[i+1])-empirica(severities2[i])
-  mort_emp[i]<-fn[i]/(1-empirica(severities2[i]))
-  }
-#plot(severities2,mort_emp, main="Mortalidad empirica", xlab="x", ylab="Mortalidad empirica", color="#cf78b7")
-ggplot() +
-  geom_point(data=data.frame(severities2, mort_emp), aes(x=severities2, y=mort_emp), shape=2, color="#cf78b7") +
-labs(x="Montos",y="Mortalidad empirica") + title.theme +
-  ggtitle("Mortalidad empírica")
+ # Mortalidad utilizando datos empirica
+ fn <- NULL
+ mortalidades <- NULL
+ for (i in 1:length(sortedSeverities)) {
+   fn[i] <- empirica(sortedSeverities[i+1])-empirica(sortedSeverities[i])
+   mortalidades[i] <- fn[i]/(1-empirica(sortedSeverities[i]))
+ }
+ 
+ # Funcion de mortalidad
+ hazardRate <- function(x, param=1) 1/param
+ 
+ types <- c("1","2")
+ p.m <- ggplot(data.frame(type=types), aes(colour=type, linetype=type, size=type))
+ theme <- theme(
+   # Leyend position
+   legend.position = c(0.05, 1),
+   legend.justification = c("left", "top"),
+   legend.box.just = "right",
+   # Legend boxes
+   legend.key = element_rect(colour = 'black', fill = 'transparent', size = .5, linetype=0),
+   legend.key.width = unit(1.5, "lines"),
+   legend.background = element_rect(fill="transparent"),
+   # Center plot title
+   plot.title = element_text(hjust = 0.5),
+   legend.text=element_text(size=8)
+ )
+ xAxis <- geom_hline(yintercept = 0, size = .1)
+ yAxis <-geom_vline(xintercept = 0, size = .1)
+ labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
+ title <- ggtitle("Funcion mortalidad")
+ 
+ points <- geom_point(
+   data=data.frame(sortedSeverities, mortalidades, type="1"),
+   aes(x=sortedSeverities, y=mortalidades, colour=type, linetype=type, size=type),
+   shape=1
+ )
+ 
+ curve <- geom_path(
+   data=data.frame(type="2"),
+   stat="function",
+   fun=hazardRate,
+   args=list(param=10000),
+   aes(colour=type, linetype=type, size=type)
+ )
+ 
+ an <- labs(TeX('Valores simulados'), TeX('Mortalidad = 1/10000'))
+ 
+ p.m+theme+xAxis+yAxis+labs(x="Montos", y="Mortalidad")+title+curve+points+xlim(0,85000)+ylim(0,1)+ asinth.axis +
+ scale_colour_manual(
+   #name="Name",
+   name = NULL,
+   values = colors,
+   labels = an,
+   breaks = types
+ ) +
+ scale_linetype_manual(
+   #name="Name",
+   name = NULL,
+   values = linetypes,
+   labels = an,
+   breaks = types
+ ) +
+ scale_size_manual(
+   #name="Name",
+   name = NULL,
+   values = sizes,
+   labels = an,
+   breaks = types
+ )
 ```
 
-\subsection{2.6 Prueba Jí-cuadrada}
+\subsection{2.6 Prueba Ji-Cuadrada de Pearson}
 
-Se agrupan los datos de tal forma que todas las frecuencias de los datos observados sean mayores a 5
+Se agrupan los datos de tal forma que todas las frecuencias de los datos observados sean mayores a 5:
 
 ```{r Prueba Chi-Square, echo=FALSE, warning=FALSE}
 ##Datos agrupados
 nj<-NULL
-agrupados1<-data.frame(cj_1=seq(0,max(severities2),5000), cj=seq(5000,max(severities2)+5000,5000))
+agrupados1<-data.frame(cj_1=seq(0,max(sortedSeverities),5000), cj=seq(5000,max(sortedSeverities)+5000,5000))
                       
 for(i in 1:length(agrupados1$cj_1)){
   nj[i]<-sum(montos<agrupados1$cj[i] & agrupados1$cj_1[i] <= montos)
@@ -968,7 +1157,7 @@ agrupados$cj[aux+1]<- agrupados$cj[length(agrupados$cj_1)]
  agrupados$cj_1[length(agrupados$V3)]<-agrupados$cj[length(agrupados$V3)-1]
  agrupados$cj[length(agrupados$cj)]<-"inf"
  agrupados$V3[length(agrupados$V3)]<-0
- agrupados
+ kable(agrupados)
 
  ##Estimo el parámetro para una exponencial por MV
 theta<-1/mean(montos)
@@ -990,12 +1179,10 @@ sumaQ<-sum(Q)
 gl<-length(agrupados$cj_1)-3
 test<-qchisq(.95,gl)
 
-Rechazar <- sumaQ>test
-Rechazar
-##No rechazamos H0. Los datos provienen de una distribuci´ón exponencial.
+Rechazar <- sumaQ > test
 ```
 
-Realizando la prueba Ji-Cuadrada, se tiene que la estadistica de prueba toma el siguite valor
+Realizando la prueba Ji-Cuadrada, se tiene que la estadistica de prueba toma el siguite valor:
 $$Q=`r sumaQ` < \chi_{(`r gl`),0.05}^2 = `r test`$$
 
 
@@ -1008,20 +1195,20 @@ ggplot(data=data.frame(num=c("1","2","3"))) +
     args = list(df = gl),
     xlim = c(test, 40),
     geom = "area",
-    fill = "#be58a0",
+    fill = moradito,
     color = "transparent",
     alpha = ".5"
     ) +
 stat_function(
   fun = dchisq,
   args = list(df = gl),
-  color="#be58a0"
+  color = moradito
 ) +
 geom_vline(
   aes(
     xintercept = sumaQ
   ),
-  color="#75cbdb"
+  color = azulito
 ) +
 geom_vline(
   aes(
@@ -1031,7 +1218,7 @@ geom_vline(
 ) +
 xlim(0,40) +
 ylim(0,0.1) +
-  labs(x = TeX('$x$'), y = TeX('$ f_{\\chi_{(14)}^2}(x) $')) + xAxis + yAxis + ggtitle("Prueba Ji-Cuadrado") + theme +
+  labs(x = TeX('$x$'), y = TeX('$ f_{\\chi_{(14)}^2}(x) $')) + xAxis + yAxis + ggtitle("Prueba Ji-Cuadrada") + theme +
   annotate("text", x = 30, y = 0.01, label = "alpha==0.05", parse=TRUE) + 
   annotate("text", x = 10, y = 0.005, label = paste("Q==", sumaQ), parse=TRUE) +
   annotate("text", x = 30, y = 0.075, label = paste("{chi^{2}} ==", test), parse=TRUE)  
