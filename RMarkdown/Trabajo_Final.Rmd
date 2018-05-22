@@ -1,6 +1,6 @@
 ---
 title: "Trabajo final de Calculo Actuarial III"
-author: "Bernardo Mondragon Brozon, Anjara Rueda"
+author: "Bernardo Mondragon Brozon, Anhara Rueda"
 date: "May 12, 2018"
 output: pdf_document
 ---
@@ -213,6 +213,7 @@ for(i in 1:n) {
 }
 # Imprimiendo solo 100
 severities[1:100]
+
 ```
 
 El histograma debe parecerse a la funcion de densidad de probabilidad:
@@ -1184,6 +1185,7 @@ Los montos de los siniestros son los siguientes:
 
 3.1 Sobre los 10000 siniestros simulados en la pregunta anterior, considera ahora que aplicarán un deducible de $5,000 y un límite de $30,000. Construye ahora el archivo de indemnizaciones correspondiente. ¿Qué proporción de los datos originales tienes ahora? ¿Pudiste haber estimado esta proporción de manera analítica con la distribución exponencial?
 ```{r}
+
 ##TRUNCAMIENTO
 Indem<-montos
 for ( i in 1:10000){
@@ -1201,7 +1203,21 @@ Indemnizacion<-as.data.frame(Indem)
 head(Indemnizacion)
 
 Indem1<-subset(Indem,Indem !=0)
-
+Indem2<-subset(Indem,Indem == 25000)
+Indem3<-subset(Indem1,Indem1!= 25000)
 ##El n´úmero de indemnizaciones que quedan despu´és del truncamiento y el l´ímite
-length(Indem1)
+length(Indem1);
+length(Indem2);
+length(Indem3);
+
+Flog<-function(x){
+ length(Indem2)*(-x*20000)+length(Indem3)*log(x)- x*sum(Indem3)
+}
+log(.0001, base = exp(1))
+
+
 ```
+
+
+
+
