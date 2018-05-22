@@ -1,6 +1,6 @@
 ---
-title: "Trabajo final de Calculo Actuarial III"
-author: "Bernardo Mondragon Brozon, Anhara Rueda"
+title: "Trabajo final de Cálculo Actuarial III"
+author: "Bernardo Mondragón Brozon, Anhara Gámez Rueda"
 date: "May 12, 2018"
 output: pdf_document
 ---
@@ -39,9 +39,9 @@ lambda_po <- 0.1
 denom <- 10000 # Por la parametrizacion de la exponencial
 lambda_exp <- 1/denom
 ```
-En donde $\{x_i\}_{i=1\dots N}$ son variables aleatorias independientes e identicamente distribuidas que indican los montos tal que $x_i$ sigue una distribucion exponencial con media $1/\lambda_{exp}=`r denom`$ para toda $i$, y $N$ es la variable aleatoria independiente de las $x_i$'s que indica la frecuencia de los montos tal que sigue una distribucion de Poisson con media $\lambda_{Po}=`r lambda_po`$ eventos en un ano.
+En donde $\{x_i\}_{i=1\dots N}$ son variables aleatorias independientes e identicamente distribuidas que indican los montos tal que $x_i$ sigue una distribución exponencial con media $1/\lambda_{exp}=`r denom`$ para toda $i$, y $N$ es la variable aleatoria independiente de las $x_i$'s que indica la frecuencia de los montos tal que sigue una distribución Poisson con media $\lambda_{Po}=`r lambda_po`$ eventos en un año.
 
-Por el teorema de probabilidad total se tiene que 
+Por el teorema de probabilidad total, se tiene que 
 $$Pr\{S\leq s|N=n\}=\frac{Pr\{S\leq s,N=n\}}{Pr\{N=n\}}  $$
 $$\Rightarrow \quad Pr\{S\leq s,N=n\}=Pr\{N=n\}Pr\{S\leq s|N=n\}.$$
 Por lo tanto se tiene que 
@@ -52,7 +52,7 @@ $$\begin{aligned}
             &= \sum_{n=0}^{\infty}Pr\{N=n\}F_X^{*n}(s).
 \end{aligned}$$
 
-En donde $F_X^{*n}(s)$ es la convolucion de las variables aleatorias $\{x_i\}_{i=1\dots N}$, o bien, la funcion de distribucion de probabilidad acumulada de $\sum_{i=n}^{N}x_i$ con $x_i \sim exp(\lambda_{exp}=1/`r  denom`)$. 
+En donde $F_X^{*n}(s)$ es la convolución de las variables aleatorias $\{x_i\}_{i=1\dots N}$, o bien, la funcion de distribucion de probabilidad acumulada de $\sum_{i=n}^{N}x_i$ con $x_i \sim exp(\lambda_{exp}=1/`r  denom`)$. 
 Sean $M_{\sum_{i=n}^{N}x_i}(t)$ y $M_{x_1}(t)$ las funciones generadoras de momentos de las variables aleatorias $\sum_{i=n}^{N}x_i$ y $x_1$ respectivamente, entonces, sin pÃ©rdida de generalidad, se tiene que
 
 $$M_{\sum_{i=n}^{N}x_i}(t)=\prod_{i=1}^n M_{x_1}(t)=\prod_{i=1}^n\frac{\lambda_{exp}}{\lambda_{exp}+t}=\left(\frac{\lambda_{exp}}{\lambda_{exp}+t}\right)^n=\left(1-\frac{t}{\lambda_{exp}}\right)^{-n}.$$
@@ -879,7 +879,7 @@ Sea $M$ la variable aleatoria que indica el monto de un siniestro, entonces el v
 
 $$  E\left( \min{M, l} \right)=\int_{0}^{l}\frac{m}{10000}e^{-\frac{m}{10000}} \, \mathrm{d}m=10000-(l+10000)e^{-\frac{l}{10000}} $$
 
-A continuacion se presenta a la \textbf{media limitada} de los montos como funcion del limite:
+A continuacion se presenta a la media limitada de los montos como funcion del limite:
 
 ```{r Media limitada, echo=FALSE, warning=FALSE, message=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 severities2 <- sort(unique(montos))
@@ -897,81 +897,7 @@ labs(x="Montos",y="Media limitada") + title.theme +
   ggtitle("Media limitada")
 ```
 
-```{r media limitada 2, echo=FALSE, warning=FALSE, message=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
-funcionsia <- function(x) (1-exp(-lambda_exp*x))/(lambda_exp)
-
-types <- c("1","2")
-p.m <- ggplot(data.frame(type=types), aes(colour=type, linetype=type, size=type))
-theme <- theme(
-  # Leyend position
-  legend.position = c(1, 0),
-  legend.justification = c("right", "bottom"),
-  legend.box.just = "right",
-  # Legend boxes
-  legend.key = element_rect(colour = 'black', fill = 'transparent', size = .5, linetype=0),
-  legend.key.width = unit(1.5, "lines"),
-  legend.background = element_rect(fill="transparent"),
-  # Center plot title
-  plot.title = element_text(hjust = 0.5),
-  legend.text=element_text(size=8)
-)
-xAxis <- geom_hline(yintercept = 0, size = .1)
-yAxis <-geom_vline(xintercept = 0, size = .1)
-labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
-title <- ggtitle("Funcion media limiatada")
-
-points <- geom_point(
-  data=data.frame(severities2, media_limitada, type="1"),
-  aes(x=severities2, y=media_limitada, colour=type, linetype=type, size=type),
-  shape=0
-)
-
-curve <- geom_path(
-  data=data.frame(type="2"),
-  stat="function",
-  fun=funcionsia,
-  aes(colour=type, linetype=type, size=type)
-)
-
-an <- labs(TeX('Valores simulados'), TeX('Media limitada'))
-
-if (colorImp) {
-  colors <- c("purple","cyan")
-  sizes <- c(.3,1)
-  linetypes <- c(1,1)
-} else {
-  colors <- c("black","black")
-  sizes <- c(1,1)
-  linetypes <-c(1,2)
-}
-
-p.m+theme+xAxis+yAxis+labs(x="Limite", y="Media limitada")+title+curve+points+xlim(0,80000)+ylim(0,10000)+ asinth.axis +
-scale_colour_manual(
-  #name="Name",
-  name = NULL,
-  values = colors,
-  labels = an,
-  breaks = types
-) +
-scale_linetype_manual(
-  #name="Name",
-  name = NULL,
-  values = linetypes,
-  labels = an,
-  breaks = types
-) +
-scale_size_manual(
-  #name="Name",
-  name = NULL,
-  values = sizes,
-  labels = an,
-  breaks = types
-)
-```
-
-Como los montos son distribuidos exponencialmente con media $E(x_1)=1/\lambda_{exp}$, no se observan indicios de una distribucio de cola pesada.
-
-La \textbf{media en exceso} como funcion del umbral es la siguiente:
+Media en exceso:
 
 ```{r media en exceso, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 ##Media en exceso
@@ -980,82 +906,14 @@ for(i in 1:length(severities2)){
   d<-severities2[i]
   media_exceso[i]<- sum(montos[montos>d]-d)/sum(montos>d)
 }
-
-excesMean <- function(x, param=1) param
-
-types <- c("1","2")
-p.m <- ggplot(data.frame(type=types), aes(colour=type, linetype=type, size=type))
-theme <- theme(
-  # Leyend position
-  legend.position = c(1, 0),
-  legend.justification = c("right", "bottom"),
-  legend.box.just = "right",
-  # Legend boxes
-  legend.key = element_rect(colour = 'black', fill = 'transparent', size = .5, linetype=0),
-  legend.key.width = unit(1.5, "lines"),
-  legend.background = element_rect(fill="transparent"),
-  # Center plot title
-  plot.title = element_text(hjust = 0.5),
-  legend.text=element_text(size=8)
-)
-xAxis <- geom_hline(yintercept = 0, size = .1)
-yAxis <-geom_vline(xintercept = 0, size = .1)
-labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
-title <- ggtitle("Funcion media en exceso")
-
-points <- geom_point(
-  data=data.frame(severities2, media_exceso, type="1"),
-  aes(x=severities2, y=media_exceso, colour=type, linetype=type, size=type),
-  shape=1
-)
-
-curve <- geom_path(
-  data=data.frame(type="2"),
-  stat="function",
-  fun=excesMean,
-  args=list(param=10000),
-  aes(colour=type, linetype=type, size=type)
-)
-
-an <- labs(TeX('Valores simulados'), TeX('Media en exceso'))
-
-if (colorImp) {
-  colors <- c("purple","cyan")
-  sizes <- c(.3,1)
-  linetypes <- c(1,1)
-} else {
-  colors <- c("black","black")
-  sizes <- c(1,1)
-  linetypes <-c(1,2)
-}
-
-p.m+theme+xAxis+yAxis+labs(x="Umbral", y="Media en exceso")+title+curve+points+xlim(0,80000)+ylim(0,15000)+ asinth.axis +
-scale_colour_manual(
-  #name="Name",
-  name = NULL,
-  values = colors,
-  labels = an,
-  breaks = types
-) +
-scale_linetype_manual(
-  #name="Name",
-  name = NULL,
-  values = linetypes,
-  labels = an,
-  breaks = types
-) +
-scale_size_manual(
-  #name="Name",
-  name = NULL,
-  values = sizes,
-  labels = an,
-  breaks = types
-)
+#plot(severities2, media_exceso, main="Media en exceso", xlab="x", ylab="Media en exceso")
+ggplot() +
+  geom_point(data=data.frame(severities2, media_exceso), aes(x=severities2, y=media_exceso), shape=1, color="black") +
+labs(x="Montos",y="Media en exceso") + title.theme +
+  ggtitle("Media exceso")
 ```
 
-Claramente los montos de los siniestros no son un fenomeno de colas pesadas, pues se observa que la media en exceso descrece.
-
-La \text{mortalidad empirica} como funcion del monto es la siguiente:
+Motalidad empirica:
 
 ```{r mortalidad empirica, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 #Mortalidad empirica
@@ -1064,81 +922,17 @@ mort_emp<-NULL
 for(i in 1:length(severities2)){
   fn[i]<- empirica(severities2[i+1])-empirica(severities2[i])
   mort_emp[i]<-fn[i]/(1-empirica(severities2[i]))
-}
-
-hazardRate <- function(x, param=1) 1/param
-
-types <- c("1","2")
-p.m <- ggplot(data.frame(type=types), aes(colour=type, linetype=type, size=type))
-theme <- theme(
-  # Leyend position
-  legend.position = c(0.05, 1),
-  legend.justification = c("left", "top"),
-  legend.box.just = "right",
-  # Legend boxes
-  legend.key = element_rect(colour = 'black', fill = 'transparent', size = .5, linetype=0),
-  legend.key.width = unit(1.5, "lines"),
-  legend.background = element_rect(fill="transparent"),
-  # Center plot title
-  plot.title = element_text(hjust = 0.5),
-  legend.text=element_text(size=8)
-)
-xAxis <- geom_hline(yintercept = 0, size = .1)
-yAxis <-geom_vline(xintercept = 0, size = .1)
-labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
-title <- ggtitle("Funcion mortalidad")
-
-points <- geom_point(
-  data=data.frame(severities2, mort_emp, type="1"),
-  aes(x=severities2, y=mort_emp, colour=type, linetype=type, size=type),
-  shape=1
-)
-
-curve <- geom_path(
-  data=data.frame(type="2"),
-  stat="function",
-  fun=hazardRate,
-  args=list(param=10000),
-  aes(colour=type, linetype=type, size=type)
-)
-
-an <- labs(TeX('Valores simulados'), TeX('Mortalidad = 1/10000'))
-
-if (colorImp) {
-  colors <- c("purple","cyan")
-  sizes <- c(.3,1)
-  linetypes <- c(1,1)
-} else {
-  colors <- c("black","black")
-  sizes <- c(1,1)
-  linetypes <-c(1,2)
-}
-
-p.m+theme+xAxis+yAxis+labs(x="Montos", y="Mortalidad")+title+curve+points+xlim(0,80000)+ylim(0,1)+ asinth.axis +
-scale_colour_manual(
-  #name="Name",
-  name = NULL,
-  values = colors,
-  labels = an,
-  breaks = types
-) +
-scale_linetype_manual(
-  #name="Name",
-  name = NULL,
-  values = linetypes,
-  labels = an,
-  breaks = types
-) +
-scale_size_manual(
-  #name="Name",
-  name = NULL,
-  values = sizes,
-  labels = an,
-  breaks = types
-)
+  }
+#plot(severities2,mort_emp, main="Mortalidad empirica", xlab="x", ylab="Mortalidad empirica", color="#cf78b7")
+ggplot() +
+  geom_point(data=data.frame(severities2, mort_emp), aes(x=severities2, y=mort_emp), shape=2, color="#cf78b7") +
+labs(x="Montos",y="Mortalidad empirica") + title.theme +
+  ggtitle("Mortalidad empirica")
 ```
 
-\subsection{2.6 Prueba de bondad de ajuste Ji-cudrado}
+\subsection{2.6 Prueba Jí-cuadrada}
+
+Se agrupan los datos de tal forma que todas las frecuencias de los datos observados sean mayores a 5
 
 ```{r Prueba Chi-Square, echo=FALSE, warning=FALSE}
 ##Datos agrupados
@@ -1239,7 +1033,8 @@ ylim(0,0.1) +
   annotate("text", x = 30, y = 0.075, label = paste("{chi^{2}} ==", test), parse=TRUE)  
 ```
 
-Por lo tanto la hipotesis de que los montos de los siniestros siguen una distribucion exponencial con media $10000$ no es rechazada.
+Realizando la prueba Ji-Cuadrada, se tiene que la estadistica de prueba toma el siguite valor:
+$$Q=`r sumaQ`$$
 
 Que es menor que el punto crítico de una Jí-cuadrada con 13 grados de libertad: $$PC=`r test`$$
 
