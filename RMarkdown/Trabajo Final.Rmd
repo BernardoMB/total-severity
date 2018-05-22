@@ -34,6 +34,7 @@ colorImp <- TRUE
 La severidad total esta dada por lo siguiente:
 $$ S=x_1+x_2+\cdots+x_N  $$
 ```{r, parameters, include=FALSE}
+set.seed(7031996)
 lambda_po <- 0.1
 denom <- 10000 # Por la parametrizacion de la exponencial
 lambda_exp <- 1/denom
@@ -929,7 +930,9 @@ labs(x="Montos",y="Mortalidad empirica") + title.theme +
   ggtitle("Mortalidad empirica")
 ```
 
-2.6 
+\subsection{2.6 Prueba Jí-cuadrada}
+
+Se agrupan los datos de tal forma que todas las frecuencias de los datos observados sean mayores a 5
 
 ```{r Prueba Chi-Square, echo=FALSE, warning=FALSE}
 ##Datos agrupados
@@ -965,6 +968,7 @@ agrupados$cj[aux+1]<- agrupados$cj[length(agrupados$cj_1)]
  agrupados$cj_1[length(agrupados$V3)]<-agrupados$cj[length(agrupados$V3)-1]
  agrupados$cj[length(agrupados$cj)]<-"inf"
  agrupados$V3[length(agrupados$V3)]<-0
+ agrupados
 
  ##Estimo el parámetro para una exponencial por MV
 theta<-1/mean(montos)
@@ -986,17 +990,21 @@ sumaQ<-sum(Q)
 gl<-length(agrupados$cj_1)-3
 test<-qchisq(.95,gl)
 
-sumaQ<test
-##No rechazamos H0. Los datos provienen de una distribuci´ón exponencial.
+#sumaQ<test
+##No rechazamos H0. Los datos provienen de una distribución exponencial.
 ```
 
-Realizando la prueba Ji-Cuadrada, se tiene que el la estadistica de prueba toma el siguite valor
+Realizando la prueba Ji-Cuadrada, se tiene que la estadistica de prueba toma el siguite valor:
 $$Q=`r sumaQ`$$
-Por lo tanto la hipotesis de que la severidad sigue una distribucion exponencial con media $10000$ no es rechazada.
 
-2.7 
+Que es menor que el punto crítico de una Jí-cuadrada con 13 grados de libertad: $$PC=`r test`$$
 
-2.7 Mediante el q-q plot, indica si el modelo ajustado sobreestima o subestima las probabilidades de eventos de monto alto. 
+Por lo tanto, la hipotesis de que la severidad sigue una distribucion exponencial con media $10000$ no es rechazada.
+
+
+\subsection{2.7 El modelo ajustado sobreestima o subestima las probabilidades de eventos de monto alto}
+
+Derivado del q-q plot no podemos concluir si el modelo sobreestima o subestima los datos ya que hay muy pocos valores por debajo y por arriba de la linea de 45 grados.
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 ##barplot(E)
@@ -1012,7 +1020,8 @@ for (i in 1:10000){
   Fn2[i] <- (-10000)*log(1-(i/10001))
 }
 
-qqplot(sort(xi),Fn2, plot.it = TRUE)
+plot(sort(xi),Fn2, plot.it = TRUE) +
+abline(lm(Fn2~sort(xi)), col="blue",lwd=1)
 
 ```
 
@@ -1024,17 +1033,10 @@ qqplot(sort(xi),Fn2, plot.it = TRUE)
 ```
 
 
-\section{Estimacion con sensura y truncamiento}
+\section{3.1 Estimacion con censura y truncamiento}
 
-Los montos de los siniestros son los siguientes:
-
+Sobre los 10000 siniestros simulados se considera que aplicarán un deducible de $5,000 y un límite de $30,000. El archivo de indemnizaciones queda de la siguiente manera: 
 ```{r montos simulados, echo=FALSE, warning=FALSE}
-
-```
-
-3.1 Sobre los 10000 siniestros simulados en la pregunta anterior, considera ahora que aplicarán un deducible de $5,000 y un límite de $30,000. Construye ahora el archivo de indemnizaciones correspondiente. ¿Qué proporción de los datos originales tienes ahora? ¿Pudiste haber estimado esta proporción de manera analítica con la distribución exponencial?
-```{r}
-
 ##TRUNCAMIENTO
 Indem<-montos
 for ( i in 1:10000){
@@ -1049,24 +1051,52 @@ for ( i in 1:10000){
       }
   }
 Indemnizacion<-as.data.frame(Indem)
-head(Indemnizacion)
-
+Indem[1:25]
 Indem1<-subset(Indem,Indem !=0)
+```
+
+
+La proporción de los datos originales que quedan es de 
+```{r proporcion, echo=FALSE, warning=FALSE}
+length(Indem1)
+```
+La estimación analítica de este número se verá más adelante.
+
+\section{3.2 Estimacion por máxima verosimilitud del parámetro de la distribución exponencial con la censura y el truncamiento}
+
+```{r estimacion de lambda exponencial, echo=FALSE, warning=FALSE}
+
 Indem2<-subset(Indem,Indem == 25000)
 Indem3<-subset(Indem1,Indem1!= 25000)
-##El n´úmero de indemnizaciones que quedan despu´és del truncamiento y el l´ímite
-length(Indem1);
-length(Indem2);
-length(Indem3);
+Indem25<-length(Indem2)
+Indemsin25<-length(Indem3)
 
 Flog<-function(x){
- length(Indem2)*(-x*20000)+length(Indem3)*log(x)- x*sum(Indem3)
+ length(Indem2)*(-x*20000)+length(Indem3)*logb(x)- x*sum(Indem3)
 }
-log(.0001, base = exp(1))
 
+##Resolviendo con Solver en Excel, tenemos que:
+lambdaMV = .0000765113632847696
+mediaEst = 1/lambdaMV
+mediaDatos= mean(Indem1)
+
+##Podemos observar que la media de los datos es mayor que la media estimada ya que la segunda considera la probabilidad de los siniestros menores al deducible
+
+##La proporción de siniestros pagados calculada analíticamente es:
+EstimAnalitica<-exp(-5000*lambdaMV)*10000
 
 ```
 
+Después de resolver con Solver en Excel se obtuvo que el parámetro de la distribución exponencial estimado por máxima verosimilitud es $.000076511$ y su media $13,069.95$. Comparada con la media que se obtuvo de los datos, que fue de $13,734.35$, se puede notar que el parámetro estimado considera los efectos de censura y truncamiento adecuadamente.
+
+Analíticamente, la proporción estimada de los siniestros que se consideran indemnizaciones es de $6,821.151$.
+
+
+\section{3.3 Intervalo de confianza para el percentil 95 de la severidad}
+3.3 Construye un intervalo de confianza para el percentil 95 de la severidad. Compara este intervalo con el equivalente en la pregunta 2 y comenta.
+```{r IC Severidad, echo=FALSE, warning=FALSE} 
+
+```
 
 
 
