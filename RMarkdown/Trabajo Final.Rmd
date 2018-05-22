@@ -1205,30 +1205,32 @@ Realizando la prueba Ji-Cuadrada, se tiene que el la estadistica de prueba toma 
 $$Q=`r sumaQ` < \chi_{(`r gl`),0.05}^2 = `r test`$$
 ```{r prueba, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 ggplot(data=data.frame(num=c("1","2","3"))) +
-stat_function(
-  fun = dchisq,
-  args = list(df = gl),
-  color="purple"
-) +
-geom_vline(
-  aes(
-    xintercept = sumaQ
-  ),
-  color="cyan"
-) +
-geom_vline(
-  aes(
-    xintercept = test
-  ),
-  color="pink"
-) +
   stat_function(
     fun = dchisq,
     args = list(df = gl),
     xlim = c(test, 40),
     geom = "area",
-    fill = "pink"
+    fill = "#be58a0",
+    color = "transparent",
+    alpha = ".5"
     ) +
+stat_function(
+  fun = dchisq,
+  args = list(df = gl),
+  color="#be58a0"
+) +
+geom_vline(
+  aes(
+    xintercept = sumaQ
+  ),
+  color="#75cbdb"
+) +
+geom_vline(
+  aes(
+    xintercept = test
+  ),
+  color="black"
+) +
 xlim(0,40) +
 ylim(0,0.1) +
   labs(x = TeX('$x$'), y = TeX('$ f_{\\chi_{(14)}^2}(x) $')) + xAxis + yAxis + ggtitle("Prueba Ji-Cuadrado") + theme +
