@@ -1095,7 +1095,7 @@ Analíticamente, la proporción estimada de los siniestros que se consideran ind
 \section{3.3 Intervalo de confianza para el percentil 95 de la severidad}
 3.3 Construye un intervalo de confianza para el percentil 95 de la severidad. Compara este intervalo con el equivalente en la pregunta 2 y comenta.
 ```{r IC Severidad, echo=FALSE, warning=FALSE} 
-Prueba
+
 ```
 
 
