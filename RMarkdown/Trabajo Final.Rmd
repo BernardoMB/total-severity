@@ -180,7 +180,7 @@ pdf.ylim <- ylim(0,.00001)
 p + xAxis + yAxis + pdf.comp.pois.labels + pdf.comp.pois.title + title.theme + pdf.comp.pois.layer + pdf.xlim + pdf.ylim
 ```
 
-A continuacion se presenta una tabla que indica la probabilidad que se acumula en ciertos puntos de la distribucion de la severidad total:
+A continuación se presenta una tabla que indica la probabilidad que se acumula en ciertos puntos de la distribución de la severidad total:
 ```{r percentile table, echo=FALSE, warning=FALSE}
 # Percentiles vector
 percentiles <- c(0,1,50,100,1000,10000,20000,40000,50000)
@@ -190,11 +190,11 @@ names(percentiles.df) <- c("s","F(s)")
 kable(percentiles.df)
 ```
 
-Como se puede observar, casi toda la probabilidad se acumula en valores muy pequeÃ±os para la severidad total.
+Como se puede observar, casi toda la probabilidad se acumula en valores muy pequeños para la severidad total.
 
-\section{1.2 simulacion}
+\section{1.2 Simulación}
 
-Para hacer simulaciones de la severidad total, primero hay que simular el numero $N$ de siniestros ocurridos, el cual proviene de la distribucion de Poisson con media $\lambda_{Po}=`r lambda_po`$. Una vez simulado el numero $N$ de sinistros, se simulan $N$ siniestros, que son variables aleatorias exponenciales con parametros $\lambda_{exp}=1/`r denom`$. Despues de obtener los $N$ siniestros, se suman y de esta manera se obtiene un primer valor de la severidad total. Para concluir con la simulacion, se repite el proceso anterior $10000$ veces. A continuacion se muestran los primeros $100$ valores obtenidos de la simulacion:
+Para hacer simulaciones de la severidad total, primero hay que simular el número $N$ de siniestros ocurridos, el cual proviene de la distribución de Poisson con media $\lambda_{Po}=`r lambda_po`$. Una vez simulado el número $N$ de siniestros, se simulan $N$ siniestros, que son variables aleatorias exponenciales con parámetros $\lambda_{exp}=1/`r denom`$. Después de obtener los $N$ siniestros, se suman y de esta manera se obtiene un primer valor de la severidad total. Para concluir con la simulación, se repite el proceso anterior $10000$ veces. A continuación se muestran los primeros $100$ valores obtenidos de la simulacion:
 
 ```{r simulated values, echo=FALSE, warning=FALSE, message=FALSE}
 severities <- c()
@@ -213,7 +213,7 @@ severities[1:100]
 
 ```
 
-El histograma debe parecerse a la funcion de densidad de probabilidad (la linea punteada indica la seveidad promedio):
+El histograma debe parecerse a la función de densidad de probabilidad (la linea punteada indica la seveidad promedio):
 
 ```{r histogram, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 if (colorImp) {
@@ -235,7 +235,7 @@ hist.p <- ggplot(data=severities.df, aes(x=severities)) +
 hist.p
 ```
 
-En la siguiente grafica se puede apreciar que, en efecto, el histograma se parece a la funcion de densidad de probabilidad (notese el cambio de escala en el eje y):
+En la siguiente gráfica se puede apreciar que, en efecto, el histograma se parece a la función de densidad de probabilidad (nótese el cambio de escala en el eje y):
 
 ```{r histogram with density, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 # Plot the PDF with scaled histogram
@@ -247,31 +247,31 @@ hist.p2
 # https://stat.ethz.ch/pipermail/r-help/2011-June/280588.html
 ```
 
-\section{1.3 Comparacion de los valores reales con los estimados}
+\section{1.3 Comparación de los valores reales con los estimados}
 
-Se vio que la severidad total, que sigue uns distribucion de Poisson Compuesta, esta dada por
+Se vio que la severidad total, que sigue uns distribucion de Poisson Compuesta, está dada por
 $$  S=\sum_{i=1}^{N}x_i.$$
-Entonces el valor esperado de la severidad total esta dado por
+Entonces el valor esperado de la severidad total está dado por
 $$\begin{aligned}
   E(S) &= E\left(\sum_{i=1}^{N}x_i\right)=E(E(S|N=n))=E\left(\sum_{i=1}^{n}x_i\bigg\rvert N=n\right)=E(NE(x_1))  \\
             &= E\left(N\left(\frac{1}{\lambda_{exp}}\right)\right)=\frac{1}{\lambda_{exp}E(N)}=\frac{\lambda_{exp}}{\lambda_{Po}}=\frac{10000}{0.1}=1000
 \end{aligned}$$
-y su varianza esta dada por
+y su varianza está dada por
 $$\begin{aligned}
   Var(S) &= Var(E(S|N)) + E(Var(S|N)) = Var(NE(x_1))+E(NVar(x_1)) \\
             &=\frac{1}{\lambda_{exp}}Var(N) + \frac{1}{\lambda_{exp}^2}E(N) = \frac{\lambda_{Po}}{\lambda_{exp}} + \frac{\lambda_{Po}}{\lambda_{exp}^2}=(10000)(0.1) + (10000)^2(0.1)=10001000
 \end{aligned},$$
 de manera que su desviacion estandar es la siguinete:  
 $$\sqrt{Var(S)}=\sqrt{10001000}=3162.43577.$$
-La funcion generadora de momentos de $S$ esta dada por
+La función generadora de momentos de $S$ está dada por
 $$M_{S}(t)=E\left(e^{N\ln\left(e^{x_{1}t}\right)}\right)=M_{N}(\ln\left(x_{1}t\right))=e^{\lambda_{Po}\left(\frac{\lambda_{exp}}{\lambda_{exp}+t}-1\right)} $$
 
-se sigue que el sesgo de la distribucion es positivo y esta dado por
+se sigue que el sesgo de la distribucion es positivo y está dado por
 $$E\left((S-E(S))^3\right)=\lambda_{Po}E(x_1^3)=\lambda_{Po}M^{(3)}_{x_1}(0)=\lambda_{Po}\frac{6}{\lambda_{exp}^3}=(0.1)(6)(10000)^3=6\times 10^{11},$$
-y el coeficiente de Kurtosis esta dado por
+y el coeficiente de Kurtosis es
 $$ \frac{E(S^4)}{Var(S)^2}=\frac{M_{s}^{(4)}(0)}{\left(\frac{\lambda_{Po}}{\lambda_{exp}} + \frac{\lambda_{Po}}{\lambda_{exp}^2}\right)^2}=\frac{\frac{\lambda_{Po}^4+12\lambda_{Po}^3+36\lambda_{Po}^2+24\lambda_{Po}}{\lambda_{exp}^4}}{10001000^2}=\frac{\frac{(0.1)^4+12(0.1)^3+36(0.1)^2+24(0.1)}{(1/10000)^4}}{10001000^2}=277.1545. $$
 
-Con valores simulados se tienen las siguientes estimaciones para la severidad total
+Con valores simulados, se tienen las siguientes estimaciones para la severidad total
 
 ```{r comparando con valores estimados, echo=FALSE}
 #value <- c("Media","Varianza","Sesgo","Kurtosis")
@@ -283,14 +283,14 @@ Con valores simulados se tienen las siguientes estimaciones para la severidad to
 #kable(df.values)
 ```
 
-\section{1.4 Aproximacion de la distribucion de la severidad total}
+\section{1.4 Aproximación de la distribución de la severidad total}
 
-La funcion de distribucion Poisson Compuesta pude ser aproximada mediante una distribucion Gamma trasladada con los siguientes parametros: 
+La función de distribución Poisson Compuesta puede ser aproximada mediante una distribución Gamma trasladada con los siguientes parámetros: 
 $$\alpha=\frac{4\lambda_{Po}E\left(x_1^{2}\right)^3}{E\left(x_1^3\right)^2}=\frac{4\lambda_{Po}\left(\frac{2}{\lambda_{exp}^2}\right)^3}{\left(\frac{6}{\lambda_{exp}^3}\right)^2}=\frac{4}{45}, \quad \beta=\frac{2E\left(x_1^2\right)}{E\left(x_1^3\right)}=\frac{2\left(\frac{2}{\lambda_{exp}^2}\right)}{\left(\frac{6}{\lambda_{exp}^3}\right)}=\frac{1}{15000}$$
 
 y un desplazamiento
 $$x_0=\lambda_{Po}E\left(x_1\right)-\frac{2\lambda_{Po}E(x_1^2)^2}{E(x_1^3)}=\lambda_{Po}\left(\frac{1}{\lambda_{exp}}\right)-\frac{2\lambda_{Po}\left(\frac{2}{\lambda_{exp}^2}\right)^2}{\left(\frac{6}{\lambda_{exp}^3}\right)}=-\frac{1000}{3}$$
-Observe que la aproximacion es buena para valores distantes de la media de la distribucion Poisson Compuesta: 
+Observe que la aproximación es buena para valores distantes de la media de la distribución Poisson Compuesta: 
 ```{r densidad vs aproximacion gamma, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 # PDF Gamma Trasladada
 getValues.pdf.gamma.tras <- function(x, desp=1, alpha=4, beta=2) {
@@ -318,7 +318,7 @@ comp.theme <- theme(
 )
 
 # Title
-comp.title <- ggtitle("Densidad de la severidad total \n vs. \n aproximacion Gamma")
+comp.title <- ggtitle("Densidad de la severidad total \n vs. \n aproximación Gamma")
 
 # Number of different function to be ploted
 types <- c("1","2")
@@ -380,7 +380,7 @@ comp.p + comp.theme + xAxis + yAxis + pdf.comp.pois.labels + comp.title + pdf.xl
 Para valores cercanos a la media es mas conveniente aproximar la distribucion Poisson Compuesta con una distribucion Normal con los siguientes parametros: 
 $$\mu=E(N)E(X_1)=\frac{\lambda_{Po}}{\lambda_{exp}}=(0.1)(10000)=1000, $$
 $$\sigma^2={E(x_1)}Var(N) + Var(x_1)E(N) = \frac{\lambda_{Po}}{\lambda_{exp}} + \frac{\lambda_{Po}}{\lambda_{exp}^2}=(10000)(0.1) + (10000)^2(0.1)=10001000$$
-Sin embargo, esto solo funciona para valores grandes de $\lambda_{Po}$. En el siguinete grafico se muestra que la aproximacion Normal para valores alrededor de la media es bastante mala, pues como $\lambda_{Po}$ es pequena la media de la suma de variables aleatorias no corverge a la media de la aproximacion Normal:
+Sin embargo, esto solo funciona para valores grandes de $\lambda_{Po}$. En el siguinete gráfico se muestra que la aproximación Normal para valores alrededor de la media es bastante mala, pues como $\lambda_{Po}$ es pequeña la media de la suma de variables aleatorias no corverge a la media de la aproximación Normal:
 
 ```{r densidad vs aproximacion normal, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 # PDF Compound Poisson Distribution 
@@ -440,7 +440,7 @@ yAxis <-geom_vline(xintercept = 0, size = .1)
 # Labels
 labels <- labs(x = TeX('$s$'), y = TeX('$f_S(s)$'))
 # Title
-title <- ggtitle("Densidad de la severidad total \n vs. \n aproximacion Normal")
+title <- ggtitle("Densidad de la severidad total \n vs. \n aproximación Normal")
 # Empty plot
 # Number of different function to be ploted
 types <- c("1","2")
@@ -471,7 +471,7 @@ if (colorImp) {
   linetypes <-c(1,5)
 }
 # Legends
-an <- labs(TeX('Severidad total'), TeX('aproximacion Normal'))
+an <- labs(TeX('Severidad total'), TeX('aproximación Normal'))
 
 # Plot
 p1 + theme + xAxis + yAxis + labels + title + pdf.xlim + pdf.ylim + pdf1 + pdf2 +
@@ -498,7 +498,7 @@ p1 + theme + xAxis + yAxis + labels + title + pdf.xlim + pdf.ylim + pdf1 + pdf2 
   )
 ```
 
-En este caso, la media de la distribucion de la frecuencia de los siniestros en un ano es un valor muy pequeno dado por $\lambda_{Po}=`r lambda_po`$, entonces lo mas recomendable para estimar percentiles alrededor de la media es aproximar la funcion de distribucion mediante una distribucion lognormal:
+En este caso, la media de la distribución de la frecuencia de los siniestros en un año es un valor muy pequeño dado por $\lambda_{Po}=`r lambda_po`$, entonces, lo más recomendable para estimar percentiles alrededor de la media, es aproximar la función de distribución mediante una distribución lognormal:
 
 ```{r densidad vs aproximacion lognormal, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 get.dlnorm <- function(x, corr=0, meanlog=0, sdlog=1) {
@@ -509,7 +509,7 @@ get.dlnorm <- function(x, corr=0, meanlog=0, sdlog=1) {
 # Labels
 labels.comp <- labs(x = TeX('$s$'), y = TeX('$f_S(s)$'))
 # Title
-title.comp <- ggtitle("Densidad de la severidad total \n vs. \n aproximacion Lognormal")
+title.comp <- ggtitle("Densidad de la severidad total \n vs. \n aproximación Lognormal")
 # Empty plot
 # Number of different function to be ploted
 types <- c("1","2")
@@ -530,7 +530,7 @@ pdf2.log.norm <- stat_function(
   aes(colour=type, linetype=type, size=type)
 )
 # Legends
-an <- labs(TeX('Severidad total'), TeX('aproximacion Lognormal'))
+an <- labs(TeX('Severidad total'), TeX('aproximación Lognormal'))
 # Plot
 p1 + theme + xAxis + yAxis + labels.comp + title.comp + 
   xlim(0,80000) + 
@@ -559,12 +559,12 @@ p1 + theme + xAxis + yAxis + labels.comp + title.comp +
   )
 ```
 
-Esta proximacion Lognormal tiene un corrimiento igual $5000$, una media de $4$ y una desviacion estandar de $5$.
+Esta proximación Lognormal tiene un corrimiento igual $5000$, una media de $4$ y una desviación estándar de $5$.
 
 
-\section{1.3 distribucion empirica}
+\section{1.3 Distribución empírica}
 
-La distribucion empirica de la severidad total esta dada por
+La distribución empírica de la severidad total está dada por
 
 ```{r, Preg. 2.3 Distribucion empirica de la severidad, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 df <- data.frame(severities)
@@ -575,12 +575,12 @@ theme <- theme(
 if (colorImp) emp.color <- "#add8e6" else emp.color <- "black"
 ggplot() + stat_ecdf(data=df, aes(x=severities), geom = "step", color=emp.color) +
   labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$')) + asinth.axis + xAxis + yAxis +
-  ggtitle("distribucion empirica de la severidad total") + theme + cdf.ylim
+  ggtitle("distribución empírica de la severidad total") + theme + cdf.ylim
 ```
 
-Entonces un intervalo de confianza a un nivel de $(1-\alpha)100\%$ para distribucion de la serveridad total $F_{S}(s)$ esta dado por
+Entonces, un intervalo de confianza a un nivel de $(1-\alpha)100\%$ para distribución de la serveridad total $F_{S}(s)$ está dado por
 $$\left(F_{s_n}(s)-\sqrt\frac{\ln\frac{2}{\alpha}}{2n}, F_{s_n}(s)+\sqrt\frac{\ln\frac{2}{\alpha}}{2n}\right)$$
-Si se construyen los intervalos de confianza al $95\%$ para $F_S(s)$ utilizando la distribucion empirica se tiene lo siguiente:
+Si se construyen los intervalos de confianza al $95\%$ para $F_S(s)$ utilizando la distribución empírica se tiene lo siguiente:
 ```{r, echo=FALSE, warning=FALSE}
 Fn <- c(1:10000)
 ordenados <- sort(severities)
@@ -620,7 +620,7 @@ theme <- theme(
 xAxis <- geom_hline(yintercept = 0, size = .1)
 yAxis <-geom_vline(xintercept = 0, size = .1)
 labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
-title <- ggtitle("Intervalos de confianza al 95% para \n la distribucion de la severidad total")
+title <- ggtitle("Intervalos de confianza al 95% para \n la distribución de la severidad total")
 
 fun2 <- geom_step(data=data.frame(ordenados,limsup, type="1"), aes(x=ordenados, y=limsup, colour=type, linetype=type, size=type)) 
 fun1 <- geom_step(data=data.frame(ordenados,Fn, type="3"), aes(x=ordenados, y=Fn, colour=type, linetype=type, size=type)) 
@@ -632,7 +632,7 @@ cdf.layer <- geom_path(
   args=list(lambda_po=lambda_po, lambda_exp=lambda_exp),
   aes(colour=type, linetype=type, size=type)
 )
-an <- labs(TeX('Cota superior'), TeX('teorica'),TeX('empirica'), TeX('Cota inferior'))
+an <- labs(TeX('Cota superior'), TeX('teórica'),TeX('empírica'), TeX('Cota inferior'))
 
 if (colorImp) {
   colors <- c("#800080","#ffa500","#add8e6","purple")
@@ -670,11 +670,11 @@ scale_size_manual(
 ```
 
 
-\section{Estimacion de la frecuencia y severidad}
+\section{Estimación de la frecuencia y severidad}
 
-\subsection{2.1 simulacion de los pares $\left(T_i,x_i\right)$}
+\subsection{2.1 Simulación de los pares $\left(T_i,x_i\right)$}
 
-Como la frecuencia de los eventos en un ano se distribuye Poisson con media $\lambda_{Po}=`r lambda_po`$, entonces las diferencias de tiempo entre las ocurrencias de los eventos siguen una distribucion exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$, es decir, los tiempo inter-arribos siguen una distribucion exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$. Simulando los tiempo inter-arribos exponenciales se puden simular las fechas de ocurrencias de los siniestros a partir de hoy. A continuacion se muestran las primeras $10$ realizaciones de las fechas de los siniestros y los montos correspondientes distribuidos exponencialmente con media $1/\lambda_{exp}=`r denom`$:
+Como la frecuencia de los eventos en un añoo se distribuye Poisson con media $\lambda_{Po}=`r lambda_po`$, entonces las diferencias de tiempo entre las ocurrencias de los eventos siguen una distribución exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$, es decir, los tiempos inter-arribos siguen una distribución exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$. Simulando los tiempos inter-arribos exponenciales, se puden simular las fechas de ocurrencia de los siniestros a partir de hoy. A continuación se muestran las primeras $10$ realizaciones de las fechas de los siniestros y los montos correspondientes distribuidos exponencialmente con media $1/\lambda_{exp}=`r denom`$:
 
 ```{r simulated pairs, echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -707,7 +707,7 @@ kable(head(pairs.df, 10))
 
 \subsection{2.2 Serie de tiempo} 
 
-A continuacion se muestra la serie de tiempo generada
+A continuación se muestra la serie de tiempo generada
 
 ```{r, serie de tiempo, echo=FALSE, fig.height = 12, fig.width = 10}
 # Ploting time series
@@ -736,11 +736,11 @@ ggplot(data = dfonsio, aes(x = c(1:10000), y = montonson, group = 1)) +
   geom_hline(yintercept=10000, size=1, color="cyan") + coord_flip() + scale_y_reverse()
 ```
 
-La linea azul claro indica la media de la distribucion teorica a partir de la cual fueron simulados los datos.
+La linea azul claro indica la media de la distribución teorica a partir de la cual fueron simulados los datos.
 
-\subsection{2.3 Distribución empirica de la severidad}
+\subsection{2.3 Distribución empírica de la severidad}
 
-Con los valores simulados de los montos, se puede construir la funcion de distribucion de probabilidad empirica de la severidad:
+Con los valores simulados de los montos, se puede construir la función de distribución de probabilidad empírica de la severidad:
 
 ```{r calculo empirica severidad, echo=FALSE, warning=FALSE}
 Fn.sev <- c(1:10000)
@@ -782,7 +782,7 @@ theme <- theme(
 xAxis <- geom_hline(yintercept = 0, size = .1)
 yAxis <-geom_vline(xintercept = 0, size = .1)
 labels <- labs(x = TeX('$m$ (montos)'), y = TeX('$F_{M_n}(m)$'))
-title <- ggtitle("Intervalos de confianza al 95% para \n la distribucion de la severidad")
+title <- ggtitle("Intervalos de confianza al 95% para \n la distribución de la severidad")
 
 ordenados.sev <- sort(montos)
 fun2 <- geom_step(data=data.frame(ordenados.sev,limsup, type="1"), aes(x=ordenados.sev, y=limsup.sev, colour=type, linetype=type, size=type)) 
@@ -795,7 +795,7 @@ cdf.layer <- geom_path(
   args=list(rate=lambda_exp),
   aes(colour=type, linetype=type, size=type)
 )
-an <- labs(TeX('Cota superior'), TeX('teorica'),TeX('empirica'), TeX('Cota inferior'))
+an <- labs(TeX('Cota superior'), TeX('teórica'),TeX('empírica'), TeX('Cota inferior'))
 
 if (colorImp) {
   colors <- c("#800080","#ffa500","#add8e6","purple")
@@ -831,7 +831,7 @@ scale_size_manual(
 )
 ```
 
-Dado el numero de observaciones (simulaciones) $n=10000$, se tiene que la funcion de distribucion empirica de la severidad se aproxima bastante bien a la funcion de distribucion teorica y la longitud de los intervalos de confianza no es muy grande. Note que las cotas superiores e inferiores "abrazan estrechamente" a la funcion de distribucion teorica. 
+Dado el numero de observaciones (simulaciones) $n=10000$, se tiene que la función de distribución empírica de la severidad se aproxima bastante bien a la función de distribución teórica y la longitud de los intervalos de confianza no es muy grande. Note que las cotas superiores e inferiores "abrazan estrechamente" a la función de distribución teórica. 
 
 \subsection{2.4 Histograma de la severidad}
 
@@ -856,7 +856,7 @@ hist.p <- ggplot(data=montos.df, aes(x=montos)) +
 hist.p
 ```
 
-Con un escalamiento adecuado sobre las frecuencias (note el cambio en la escala en el eje $y$) se puede observar la enorme similitud entre la densidad y el histograma:
+Con un escalamiento adecuado sobre las frecuencias (note el cambio en la escala en el eje $y$), se puede observar la enorme similitud entre la densidad y el histograma:
 
 ```{r  histograma con densidad sev, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 
@@ -868,18 +868,18 @@ pdf.sev.layer <- stat_function(
 )
 
 hist.p2.sev <- ggplot() + xAxis + yAxis + title.theme + pdf.xlim + ylim(0,.0001) + geom_histogram(data=montos.df, aes(x=montos, y=.00000002*..count..), breaks=breaks, color=hist.color, fill=hist.fill, alpha=hist.alpha) + pdf.sev.layer +
-  ggtitle("funcion de densidad de probabilidad \n de la severidad total") +
+  ggtitle("función de densidad de probabilidad \n de la severidad total") +
   labs(x = TeX('$s$'), y = TeX('$f_S(s)$'))
 hist.p2.sev
 ```
 
-\subsection{2.5 Caracteristicas de la distribucion empirica}
+\subsection{2.5 Características de la distribución empírica}
 
-Sea $M$ la variable aleatoria que indica el monto de un siniestro, entonces el valor esperado de $M$ limitado a $l$ esta dada por
+Sea $M$ la variable aleatoria que indica el monto de un siniestro, entonces el valor esperado de $M$ limitado a $l$ está dada por
 
 $$  E\left( \min{M, l} \right)=\int_{0}^{l}\frac{m}{10000}e^{-\frac{m}{10000}} \, \mathrm{d}m=10000-(l+10000)e^{-\frac{l}{10000}} $$
 
-A continuacion se presenta a la media limitada de los montos como funcion del limite:
+A continuación se presenta a la media limitada de los montos como función del limite:
 
 ```{r Media limitada, echo=FALSE, warning=FALSE, message=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 severities2 <- sort(unique(montos))
@@ -913,7 +913,7 @@ labs(x="Montos",y="Media en exceso") + title.theme +
   ggtitle("Media exceso")
 ```
 
-Motalidad empirica:
+Motalidad empírica:
 
 ```{r mortalidad empirica, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 #Mortalidad empirica
@@ -927,7 +927,7 @@ for(i in 1:length(severities2)){
 ggplot() +
   geom_point(data=data.frame(severities2, mort_emp), aes(x=severities2, y=mort_emp), shape=2, color="#cf78b7") +
 labs(x="Montos",y="Mortalidad empirica") + title.theme +
-  ggtitle("Mortalidad empirica")
+  ggtitle("Mortalidad empírica")
 ```
 
 \subsection{2.6 Prueba Jí-cuadrada}
@@ -995,8 +995,12 @@ Rechazar
 ##No rechazamos H0. Los datos provienen de una distribuci´ón exponencial.
 ```
 
-Realizando la prueba Ji-Cuadrada, se tiene que el la estadistica de prueba toma el siguite valor
+Realizando la prueba Ji-Cuadrada, se tiene que la estadistica de prueba toma el siguite valor
 $$Q=`r sumaQ` < \chi_{(`r gl`),0.05}^2 = `r test`$$
+
+
+Por lo tanto, la hipótesis de que la severidad sigue una distribución exponencial con media $10000$ no es rechazada.
+
 ```{r prueba, echo=FALSE, warning=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
 ggplot(data=data.frame(num=c("1","2","3"))) +
   stat_function(
@@ -1033,14 +1037,6 @@ ylim(0,0.1) +
   annotate("text", x = 30, y = 0.075, label = paste("{chi^{2}} ==", test), parse=TRUE)  
 ```
 
-Realizando la prueba Ji-Cuadrada, se tiene que la estadistica de prueba toma el siguite valor:
-$$Q=`r sumaQ`$$
-
-Que es menor que el punto crítico de una Jí-cuadrada con 13 grados de libertad: $$PC=`r test`$$
-
-Por lo tanto, la hipotesis de que la severidad sigue una distribucion exponencial con media $10000$ no es rechazada.
-
-
 \subsection{2.7 El modelo ajustado sobreestima o subestima las probabilidades de eventos de monto alto}
 
 Derivado del q-q plot no podemos concluir si el modelo sobreestima o subestima los datos ya que hay muy pocos valores por debajo y por arriba de la linea de 45 grados.
@@ -1072,9 +1068,9 @@ abline(lm(Fn2~sort(xi)), col="blue",lwd=1)
 ```
 
 
-\section{3.1 Estimacion con censura y truncamiento}
+\section{3.1 Estimación con censura y truncamiento}
 
-Sobre los 10000 siniestros simulados se considera que aplicarán un deducible de $5,000 y un límite de $30,000. El archivo de indemnizaciones queda de la siguiente manera: 
+Sobre los 10000 siniestros simulados se considera que aplicarán un deducible de $5,000 y un límite de $30,000. El archivo de indemnizaciones queda de la siguiente manera (primeros 100 datos): 
 ```{r montos simulados, echo=FALSE, warning=FALSE}
 ##TRUNCAMIENTO
 Indem<-montos
@@ -1090,7 +1086,7 @@ for ( i in 1:10000){
       }
   }
 Indemnizacion<-as.data.frame(Indem)
-Indem[1:25]
+Indem[1:100]
 Indem1<-subset(Indem,Indem !=0)
 ```
 
@@ -1101,7 +1097,7 @@ length(Indem1)
 ```
 La estimación analítica de este número se verá más adelante.
 
-\section{3.2 Estimacion por máxima verosimilitud del parámetro de la distribución exponencial con la censura y el truncamiento}
+\section{3.2 Estimación por máxima verosimilitud del parámetro de la distribución exponencial con la censura y el truncamiento}
 
 ```{r estimacion de lambda exponencial, echo=FALSE, warning=FALSE}
 
@@ -1126,7 +1122,7 @@ EstimAnalitica<-exp(-5000*lambdaMV)*10000
 
 ```
 
-Después de resolver con Solver en Excel se obtuvo que el parámetro de la distribución exponencial estimado por máxima verosimilitud es $.000076511$ y su media $13,069.95$. Comparada con la media que se obtuvo de los datos, que fue de $13,734.35$, se puede notar que el parámetro estimado considera los efectos de censura y truncamiento adecuadamente.
+Después de resolver con Solver en Excel, se obtuvo que el parámetro de la distribución exponencial estimado por máxima verosimilitud es $.000076511$ y su media $13,069.95$. Comparada con la media que se obtuvo de los datos, que fue de $13,734.35$, se puede notar que el parámetro estimado considera los efectos de censura y truncamiento adecuadamente.
 
 Analíticamente, la proporción estimada de los siniestros que se consideran indemnizaciones es de $6,821.151$.
 
