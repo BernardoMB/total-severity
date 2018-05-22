@@ -119,3 +119,11 @@ p1 + theme + xAxis + yAxis + labels + title + xlim + ylim + pdf1 + pdf2 +
     labels = an,
     breaks = types
   )
+
+
+
+
+
+
+
+
