@@ -1055,21 +1055,14 @@ Indem1<-subset(Indem,Indem !=0)
 Indem2<-subset(Indem,Indem == 25000)
 Indem3<-subset(Indem1,Indem1!= 25000)
 ##El n´úmero de indemnizaciones que quedan despu´és del truncamiento y el l´ímite
-length(Indem1)
-length(Indem2)
-length(Indem3)
-
-suma=0
-
-i=1
-while( i <=10000){
-  suma = suma + (-x^2)*Indem3[i+5000]+x*5000
-  i=i+1
-}
+length(Indem1);
+length(Indem2);
+length(Indem3);
 
 Flog<-function(x){
  length(Indem2)*(-x*20000)+length(Indem3)*log(x)- x*sum(Indem3)
 }
+log(.0001, base = exp(1))
 
 
 ```
