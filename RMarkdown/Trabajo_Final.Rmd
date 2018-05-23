@@ -2,7 +2,9 @@
 title: "Trabajo final de Cálculo Actuarial III"
 author: "Bernardo Mondragón Brozon, Anhara Gámez Rueda"
 date: "May 12, 2018"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 <!-- Configure R Markdown file -->
@@ -946,7 +948,7 @@ theme <- theme(
  xAxis <- geom_hline(yintercept = 0, size = .1)
  yAxis <-geom_vline(xintercept = 0, size = .1)
  labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
- title <- ggtitle("Funcion media limiatada")
+ title <- ggtitle("Función media limiatada")
  
  points <- geom_point(
    data=data.frame(sortedSeverities, mediasLimitadas, type="1"),
@@ -1030,7 +1032,7 @@ Como los montos son distribuidos exponencialmente con media $E(x_1)=1/\lambda_{e
  xAxis <- geom_hline(yintercept = 0, size = .1)
  yAxis <-geom_vline(xintercept = 0, size = .1)
  labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
- title <- ggtitle("Funcion media en exceso")
+ title <- ggtitle("Función media en exceso")
  
  points <- geom_point(
    data=data.frame(sortedSeverities, mediasEnExceso, type="1"),
@@ -1106,7 +1108,7 @@ La \text{mortalidad empirica} como funcion del monto es la siguiente:
  xAxis <- geom_hline(yintercept = 0, size = .1)
  yAxis <-geom_vline(xintercept = 0, size = .1)
  labels <- labs(x = TeX('$s$'), y = TeX('$F_{S_n}(s)$'))
- title <- ggtitle("Funcion mortalidad")
+ title <- ggtitle("Función mortalidad")
  
  points <- geom_point(
    data=data.frame(sortedSeverities, mortalidades, type="1"),
@@ -1414,6 +1416,7 @@ names(chacadaModif) <- c("Fechas", "Montos")
 kable(chacadaModif)
 ```
 
+
 Como resultado de imponer un deducible y un límite, se ha eliminado un  $`r eliminados`\%$ de registros en el archivo de indemnizaciones. Se aceptó la hipótesis de que los montos de los siniestros provienen de una distribución exponencial de media $`r denom`$, entonces se puede estimar de manera anaítica la proporción de registros eliminados mediante la probabilidad de que el monto de un siniestro se encuentre por debajo del deducible de $`r deducible`$. Esta probabilidad es la siguiente:
 $$ Pr\{M\leq `r deducible`\}=1-e^{-\frac{`r deducible`}{`r denom`}}=`r eliminadosTeoricos`.$$
 
@@ -1470,6 +1473,52 @@ theme
 La línea azul claro indica el valor de la media en exceso con un umbral de $`r deducible`$.
 
 \subsection{3.2 Estimación para montos con deducible y límite}
+Primero vamos a definir la función con el deducible de $5,000$ y un límite de $30,000$
+$$
+y(x) = \begin{cases}
+  0 & x\leq 5,000\\
+  x-5000 & 5,000\leq x \leq 30,000\\
+  25,000 & 30,000\leq x
+\end{cases}
+$$
+
+$$
+F_{Y}(y) = \begin{cases}
+ 0 & y = 0\\
+ \frac{F_{x}(y + 5000) - F_{x}(5000)}{1-F_{x}(5000)}& 0\leq y \leq 900\\
+  1  & 900\leq y
+\end{cases}
+
+$$
+
+$$
+f_{Y}(y) = \begin{cases}
+ \frac{f_{x}(y + 5000)}{S_{X}(5000)} & 0\leq y \leq 25,000 \\
+ 
+ \frac{1- F_{x}(25000)}{1-F_{x}(5000)}& y = 25,000\\
+
+\end{cases}
+$$
+Un vez teniendo bien definidas funciones de Distribución y Densidad, podemos hacer la función de Máxima Verosimilitud.
+
+$$
+L(\lambda) =   \left(\frac{1- F_{x}(25000)}{1- F_{x}(5000)}\right)^a \cdot\prod_{i=1}^b \frac{f_{x}(y_{i} + 5000)}{1-F_{x(5000)}}
+
+$$
+
+Ahora, sustituyendo los valores de la función definida, se tiene que:
+$$
+L(\lambda) = \left(\frac{e^{-\lambda(25000)}}{e^{-\lambda(5000)}}\right)^a\cdot\prod_{i=1}^b \frac{\lambda e^{-\lambda(y_{i} + 5000)}}{e^{-\lambda(5000)}}
+$$
+sacando Logaritmo a la función:
+$$
+\ln(\lambda) = a(-\lambda(25000) + \lambda(5000)) + \sum_{i=1}^b \left( \ln(\lambda)-\lambda(y_{i} + 5000) + \lambda(5000)a\right)
+$$  
+Agrupando los terminos comunes llegamos a la función a maximizar
+$$
+l(\lambda) = a(-\lambda(2000)) +  b(\ln(\lambda)) - \sum_{i=1}^by_{i}
+$$
+
 
 ```{r estimacion de lambda exponencial, echo=FALSE, warning=FALSE}
 
