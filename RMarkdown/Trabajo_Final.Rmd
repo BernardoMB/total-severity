@@ -25,6 +25,9 @@ library(knitr)
 #install.packages("kableExtra")
 library(kableExtra)
 
+#install.packages("psych")
+#library(psych)
+
 # Color?
 colorImp <- TRUE
 # Colores chidos
@@ -678,15 +681,13 @@ scale_size_manual(
 
 \subsection{2.1 Simulación de los pares $\left(T_i,x_i\right)$}
 
-Como la frecuencia de los eventos en un añoo se distribuye Poisson con media $\lambda_{Po}=`r lambda_po`$, entonces las diferencias de tiempo entre las ocurrencias de los eventos siguen una distribución exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$, es decir, los tiempos inter-arribos siguen una distribución exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$. Simulando los tiempos inter-arribos exponenciales, se puden simular las fechas de ocurrencia de los siniestros a partir de hoy. A continuación se muestran las primeras $10$ realizaciones de las fechas de los siniestros y los montos correspondientes distribuidos exponencialmente con media $1/\lambda_{exp}=`r denom`$:
+Como la frecuencia de los eventos en un año se distribuye Poisson con media $\lambda_{Po}=`r lambda_po`$, entonces las diferencias de tiempo entre las ocurrencias de los eventos siguen una distribución exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$, es decir, los tiempos inter-arribos siguen una distribución exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$. Simulando los tiempos inter-arribos exponenciales, se puden simular las fechas de ocurrencia de los siniestros a partir de hoy. A continuación se muestran las primeras $5$ y las últimas $5$ realizaciones de las fechas de los siniestros y los montos correspondientes distribuidos exponencialmente con media $1/\lambda_{exp}=`r denom`$:
 
 ```{r simulated pairs, echo=FALSE, warning=FALSE, message=FALSE}
-
-rate   <- lambda_po
 start  <- 2018
 # Tiempo interarribos
-per <- rexp(10000, rate=rate)
-# Obtener las fechas de los cinistros
+per <- rexp(10000, rate = lambda_po)
+# Obtener las fechas de los siniestros
 per[1] <- per[1]+start
 # Fechas de los siniestros
 PerTot <- cumsum(per)
@@ -701,17 +702,30 @@ convert.seconds <- function(x) {
 }
 dates <- sapply(PerTot, convert.seconds)
 
-
 pairs.df <- data.frame(dates, montos)
 names(pairs.df) <- c("Fechas", "Montos")
-kable(head(pairs.df, 10))
+primeras <- head(pairs.df, 5)
+kable(primeras, row.names = NA)
+```
+
+$$\vdots  $$
+```{r cola, echo=FALSE, warning=FALSE}
+ultimas <- tail(pairs.df, 5)
+chacada <- data.frame(ultimas$Fechas, ultimas$Montos)
+names(chacada) <- c("Fechas", "Montos")
+kable(chacada, row.names = NA)
 ```
 
 \pagebreak
 
 \subsection{2.2 Serie de tiempo} 
 
-A continuación se muestra la serie de tiempo generada
+```{r total de informacion, echo=FALSE, warning=FALSE}
+conver <- function(x) x-2018
+tiempoEnAnios <- sapply(PerTot, conver)
+```
+
+A continuación se muestra la serie de tiempo generada con la informacion de $`r floor(max(tiempoEnAnios))`$ años:
 
 ```{r, serie de tiempo, echo=FALSE, fig.height = 12, fig.width = 10}
 # Ploting time series
@@ -749,14 +763,14 @@ Con los valores simulados de los montos, se puede construir la función de distr
 ```{r calculo empirica severidad, echo=FALSE, warning=FALSE}
 Fn.sev <- c(1:10000)
 empirica<-ecdf(montos)
-ordenados.sev <- sort(montos)
+montosOrdenados <- sort(montos)
 alfa.sev <- 0.05
 limsup.sev <- c(1:10000)
 liminf.sev <- c(1:10000)
 for (i in 1:10000) {
   cuenta<-0
   for (j in 1:10000) {
-    if (ordenados.sev[j]<=ordenados.sev[i]){
+    if (montosOrdenados[j]<=montosOrdenados[i]){
       cuenta=cuenta+1
     }
   }
@@ -788,10 +802,10 @@ yAxis <-geom_vline(xintercept = 0, size = .1)
 labels <- labs(x = TeX('$m$ (montos)'), y = TeX('$F_{M_n}(m)$'))
 title <- ggtitle("Intervalos de confianza al 95% para \n la distribución de la severidad")
 
-ordenados.sev <- sort(montos)
-fun2 <- geom_step(data=data.frame(ordenados.sev,limsup, type="1"), aes(x=ordenados.sev, y=limsup.sev, colour=type, linetype=type, size=type)) 
-fun1 <- geom_step(data=data.frame(ordenados.sev,Fn, type="3"), aes(x=ordenados.sev, y=Fn.sev, colour=type, linetype=type, size=type)) 
-fun3 <- geom_step(data=data.frame(ordenados.sev,liminf, type="4"), aes(x=ordenados.sev, y=liminf.sev, colour=type, linetype=type, size=type)) 
+montosOrdenados <- sort(montos)
+fun2 <- geom_step(data=data.frame(montosOrdenados,limsup, type="1"), aes(x=montosOrdenados, y=limsup.sev, colour=type, linetype=type, size=type)) 
+fun1 <- geom_step(data=data.frame(montosOrdenados,Fn, type="3"), aes(x=montosOrdenados, y=Fn.sev, colour=type, linetype=type, size=type)) 
+fun3 <- geom_step(data=data.frame(montosOrdenados,liminf, type="4"), aes(x=montosOrdenados, y=liminf.sev, colour=type, linetype=type, size=type)) 
 cdf.layer <- geom_path(
   data=data.frame(type="2"),
   stat="function",
@@ -1218,42 +1232,117 @@ geom_vline(
 ) +
 xlim(0,40) +
 ylim(0,0.1) +
-  labs(x = TeX('$x$'), y = TeX('$ f_{\\chi_{(14)}^2}(x) $')) + xAxis + yAxis + ggtitle("Prueba Ji-Cuadrada") + theme +
+  labs(x = TeX('$x$'), y = TeX('$ f_{\\chi_{(14)}^2}(x) $')) + xAxis + yAxis + ggtitle("Prueba Ji-Cuadrada al 95%") + theme +
   annotate("text", x = 30, y = 0.01, label = "alpha==0.05", parse=TRUE) + 
   annotate("text", x = 10, y = 0.005, label = paste("Q==", sumaQ), parse=TRUE) +
   annotate("text", x = 30, y = 0.075, label = paste("{chi^{2}} ==", test), parse=TRUE)  
 ```
 
-\subsection{2.7 El modelo ajustado sobreestima o subestima las probabilidades de eventos de monto alto}
+\subsection{2.7 Q-Q Plot}
 
-Derivado del q-q plot no podemos concluir si el modelo sobreestima o subestima los datos ya que hay muy pocos valores por debajo y por arriba de la linea de 45 grados.
+Derivado del q-q plot podemos concluir que el modelo subestima las probabilidades de eventos de monto alto:
 
-```{r echo=FALSE, warning=FALSE, message=FALSE}
-##barplot(E)
-#Monto
-u2 <- runif(10000,0,1)
-xi<-(-10000)*log(1-u2)
-hist(xi,probability = TRUE,xlim = c(0,100000),breaks = 100,main = "Exponencial generada (10,000)")
-
-
-#Q-Q Plot
-Fn2 <- c(1:10000)
-for (i in 1:10000){
-  Fn2[i] <- (-10000)*log(1-(i/10001))
+```{r q-q plot, echo=FALSE, warning=FALSE, message=FALSE, fig.width=4.5, fig.height=3, fig.align = "center"}
+geom_qq_line <- function(mapping = NULL,
+                         data = NULL,
+                         geom = "path",
+                         position = "identity",
+                         ...,
+                         distribution = stats::qnorm,
+                         dparams = list(),
+                         line.p = c(.25, .75),
+                         fullrange = FALSE,
+                         na.rm = FALSE,
+                         show.legend = NA,
+                         inherit.aes = TRUE) {
+  layer(
+    data = data,
+    mapping = mapping,
+    stat = StatQqLine,
+    geom = geom,
+    position = position,
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    params = list(
+      distribution = distribution,
+      dparams = dparams,
+      na.rm = na.rm,
+      line.p = line.p,
+      fullrange = fullrange,
+      ...
+    )
+  )
 }
 
-plot(sort(xi),Fn2, plot.it = TRUE) +
-abline(lm(Fn2~sort(xi)), col="blue",lwd=1)
+StatQqLine <- ggproto("StatQqLine", Stat,
+ default_aes = aes(x = stat(x), y = stat(y)),
+ required_aes = c("sample"),
+ compute_group = function(data,
+                          scales,
+                          quantiles = NULL,
+                          distribution = stats::qnorm,
+                          dparams = list(),
+                          na.rm = FALSE,
+                          line.p = c(.25, .75),
+                          fullrange = FALSE) {
 
+   sample <- sort(data$sample)
+   n <- length(sample)
+
+   # Compute theoretical quantiles
+   if (is.null(quantiles)) {
+     quantiles <- stats::ppoints(n)
+   } else {
+     stopifnot(length(quantiles) == n)
+   }
+
+   theoretical <- do.call(
+     distribution,
+     c(list(p = quote(quantiles)), dparams)
+   )
+
+   if (length(line.p) != 2) {
+     stop(
+       "Cannot fit line quantiles ", line.p,
+       ". Parameter line.p must have length 2.",
+       call. = FALSE)
+   }
+
+   x_coords <- do.call(distribution, c(list(p = line.p), dparams))
+   y_coords <- quantile(sample, line.p)
+   slope <- diff(y_coords) / diff(x_coords)
+   intercept <- y_coords[1L] - slope * x_coords[1L]
+
+   if (fullrange & !is.null(scales$x$dimension)) {
+     x <- scales$x$dimension()
+   } else {
+     x <- range(theoretical)
+   }
+
+   data.frame(x = x, y = slope * x + intercept)
+ }
+)
+
+ggplot(data = data.frame(y = montosOrdenados), aes(sample = y)) + 
+  geom_qq(distribution = qexp, dparams = list(rate = lambda_exp), color = moradito) + geom_qq_line(distribution = qexp, dparams = list(rate = lambda_exp)) + xlab(TeX("Cuantiles $exp(\\lambda_{exp})$")) + ylab(TeX("Montos")) + ggtitle("Q-Q Plot") + theme
 ```
 
 
+\subsection{2.8 Estimacion para la frecuencia}
 
-2.8 Suponiendo que la frecuencia anual se distribuye Poisson, estima su parámetro y construye un intervalo de confianza para la siniestralidad promedio.
-```{r}
-
+```{r estimacion frecuencia, echo=FALSE, warning=FALSE}
+# Ocurrencias en cada año
+ocurrencias <- seq(0, 0, length.out = floor(max(tiempoEnAnios)))
+for (j in 1:length(tiempoEnAnios)) {
+  tiempo <- tiempoEnAnios[j]
+  anio <- floor(tiempo)
+  ocurrencias[anio] <- ocurrencias[anio] + 1
+}
+tasa <- sum(ocurrencias)/length(ocurrencias)
 ```
-
+Suponiendo que la frecuencia de los siniestros se distribuye Poisson, entonces, estimando por maxima verocimilitud se obtiene que, en promedio, ocurren 
+$$\widehat{\lambda}_{MV}=\frac{1}{T}\sum_{j=0}^{T}N_i=\frac{1}{`r floor(max(tiempoEnAnios))`}\sum_{j=0}^{`r floor(max(tiempoEnAnios))`}N_i=`r tasa` $$
+En donde $T$ es el total de años sobre los cuales se tiene información y $N_j$ es el número de siniestros que ocurrieron en el $j$-ésimo año.
 
 \section{3.1 Estimación con censura y truncamiento}
 
