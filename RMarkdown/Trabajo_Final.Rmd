@@ -35,7 +35,9 @@ moradito <- "#be58a0"
 azulito <- "#00e6e6"
 ```
 
-\section{1.1 La severidad total}
+\section{El modelo colectivo}
+
+\subsection{1.1 La severidad total}
 
 La severidad total esta dada por lo siguiente:
 $$ S=x_1+x_2+\cdots+x_N  $$
@@ -198,7 +200,7 @@ kable(percentiles.df)
 
 Como se puede observar, casi toda la probabilidad se acumula en valores muy pequeños para la severidad total.
 
-\section{1.2 Simulación}
+\subsection{1.2 Simulación}
 
 Para hacer simulaciones de la severidad total, primero hay que simular el número $N$ de siniestros ocurridos, el cual proviene de la distribución de Poisson con media $\lambda_{Po}=`r lambda_po`$. Una vez simulado el número $N$ de siniestros, se simulan $N$ siniestros, que son variables aleatorias exponenciales con parámetros $\lambda_{exp}=1/`r denom`$. Después de obtener los $N$ siniestros, se suman y de esta manera se obtiene un primer valor de la severidad total. Para concluir con la simulación, se repite el proceso anterior $10000$ veces. A continuación se muestran los primeros $100$ valores obtenidos de la simulacion:
 
@@ -253,7 +255,7 @@ hist.p2
 # https://stat.ethz.ch/pipermail/r-help/2011-June/280588.html
 ```
 
-\section{1.3 Comparación de los valores reales con los estimados}
+\subsection{1.3 Comparación de los valores reales con los estimados}
 
 Se vio que la severidad total, que sigue uns distribucion de Poisson Compuesta, está dada por
 $$  S=\sum_{i=1}^{N}x_i.$$
@@ -289,7 +291,7 @@ Con valores simulados, se tienen las siguientes estimaciones para la severidad t
 #kable(df.values)
 ```
 
-\section{1.4 Aproximación de la distribución de la severidad total}
+\subsection{1.4 Aproximación de la distribución de la severidad total}
 
 La función de distribución Poisson Compuesta puede ser aproximada mediante una distribución Gamma trasladada con los siguientes parámetros: 
 $$\alpha=\frac{4\lambda_{Po}E\left(x_1^{2}\right)^3}{E\left(x_1^3\right)^2}=\frac{4\lambda_{Po}\left(\frac{2}{\lambda_{exp}^2}\right)^3}{\left(\frac{6}{\lambda_{exp}^3}\right)^2}=\frac{4}{45}, \quad \beta=\frac{2E\left(x_1^2\right)}{E\left(x_1^3\right)}=\frac{2\left(\frac{2}{\lambda_{exp}^2}\right)}{\left(\frac{6}{\lambda_{exp}^3}\right)}=\frac{1}{15000}$$
@@ -569,7 +571,7 @@ p1 + theme + xAxis + yAxis + labels.comp + title.comp +
 Esta proximación Lognormal tiene un corrimiento igual $5000$, una media de $4$ y una desviación estándar de $5$.
 
 
-\section{1.3 Distribución empírica}
+\subsection{1.5 distribucion empirica}
 
 La distribución empírica de la severidad total está dada por
 
@@ -676,10 +678,9 @@ scale_size_manual(
 
 ```
 
+\section{Estimacion de la frecuencia y severidad}
 
-\section{Estimación de la frecuencia y severidad}
-
-\subsection{2.1 Simulación de los pares $\left(T_i,x_i\right)$}
+\subsection{2.1 simulacion de los pares $\left(T_i,x_i\right)$}
 
 Como la frecuencia de los eventos en un año se distribuye Poisson con media $\lambda_{Po}=`r lambda_po`$, entonces las diferencias de tiempo entre las ocurrencias de los eventos siguen una distribución exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$, es decir, los tiempos inter-arribos siguen una distribución exponencial con media $1/\lambda=\lambda_{Po}=`r lambda_po`$. Simulando los tiempos inter-arribos exponenciales, se puden simular las fechas de ocurrencia de los siniestros a partir de hoy. A continuación se muestran las primeras $5$ y las últimas $5$ realizaciones de las fechas de los siniestros y los montos correspondientes distribuidos exponencialmente con media $1/\lambda_{exp}=`r denom`$:
 
@@ -702,18 +703,18 @@ convert.seconds <- function(x) {
 }
 dates <- sapply(PerTot, convert.seconds)
 
-pairs.df <- data.frame(dates, montos)
-names(pairs.df) <- c("Fechas", "Montos")
-primeras <- head(pairs.df, 5)
+archivo <- data.frame(dates, montos)
+names(archivo) <- c("Fechas", "Montos")
+primeras <- head(archivo, 5)
 kable(primeras, row.names = NA)
 ```
 
 $$\vdots  $$
 ```{r cola, echo=FALSE, warning=FALSE}
-ultimas <- tail(pairs.df, 5)
+ultimas <- tail(archivo, 5)
 chacada <- data.frame(ultimas$Fechas, ultimas$Montos)
 names(chacada) <- c("Fechas", "Montos")
-kable(chacada, row.names = NA)
+kable(chacada)
 ```
 
 \pagebreak
@@ -730,7 +731,21 @@ A continuación se muestra la serie de tiempo generada con la informacion de $`r
 ```{r, serie de tiempo, echo=FALSE, fig.height = 12, fig.width = 10}
 # Ploting time series
 # https://www.neonscience.org/dc-time-series-plot-ggplot-r
-fechonsias <- pairs.df[[1]]
+theme <- theme(
+  # Leyend position
+  legend.position = c(1, 0),
+  legend.justification = c("right", "bottom"),
+  legend.box.just = "right",
+  # Legend boxes
+  legend.key = element_rect(colour = 'black', fill = 'transparent', size = .5, linetype=0),
+  legend.key.width = unit(1.5, "lines"),
+  legend.background = element_rect(fill="transparent"),
+  # Center plot title
+  plot.title = element_text(hjust = 0.5),
+  legend.text=element_text(size=8),
+  axis.text.x=element_text(size=14)
+)
+fechonsias <- archivo[[1]]
 funciononsia <- function(x) {
   value <- NA
   if (match(x,fechonsias) %% 500 !=0) {
@@ -742,7 +757,7 @@ funciononsia <- function(x) {
   value
 }
 fechunias <- sapply(fechonsias, funciononsia)
-montunios <- pairs.df[[2]]
+montunios <- archivo[[2]]
 dfonsio <- data.frame(fechunias, montunios)
 names(dfonsio) <- c("fechonson", "montonson")
 
@@ -751,7 +766,7 @@ ggplot(data = dfonsio, aes(x = c(1:10000), y = montonson, group = 1)) +
   geom_point(size=.005, color="blue", alpha=0.5) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, size=5)) + 
   scale_x_discrete(limits=dfonsio[[1]], na.translate = FALSE) + xlab("Fecha") + ylab("Monto") + 
-  geom_hline(yintercept=10000, size=1, color="cyan") + coord_flip() + scale_y_reverse()
+  geom_hline(yintercept=10000, size=1, color="cyan") + coord_flip() + scale_y_reverse() + theme
 ```
 
 La linea azul claro indica la media de la distribución teorica a partir de la cual fueron simulados los datos.
@@ -1339,41 +1354,122 @@ for (j in 1:length(tiempoEnAnios)) {
   ocurrencias[anio] <- ocurrencias[anio] + 1
 }
 tasa <- sum(ocurrencias)/length(ocurrencias)
+desviacion <- 1.96*sqrt(tasa/10000) 
+liminferior <- tasa-desviacion
+limsuperior <- tasa+desviacion
 ```
-Suponiendo que la frecuencia de los siniestros se distribuye Poisson, entonces, estimando por maxima verocimilitud se obtiene que, en promedio, ocurren 
+Suponiendo que la frecuencia de los siniestros se distribuye Poisson, entonces, estimando por máxima verocimilitud se obtiene que, en promedio, ocurren 
 $$\widehat{\lambda}_{MV}=\frac{1}{T}\sum_{j=0}^{T}N_i=\frac{1}{`r floor(max(tiempoEnAnios))`}\sum_{j=0}^{`r floor(max(tiempoEnAnios))`}N_i=`r tasa` $$
-En donde $T$ es el total de años sobre los cuales se tiene información y $N_j$ es el número de siniestros que ocurrieron en el $j$-ésimo año.
+siniestros al año. En donde $T$ es el total de años sobre los cuales se tiene información y $N_j$ es el número de siniestros que ocurrieron en el $j$-ésimo año. Además, dados estos valores se tiene que un intervalo al $95\%$ de confianza para el parámetro de esta distribución Poisson es el siguiente
 
-\section{3.1 Estimación con censura y truncamiento}
+$$\widehat{\lambda}\pm 1.96 \sqrt{\dfrac{\widehat{\lambda}}{n}}=`r tasa`\pm `r desviacion` =(`r liminferior`,`r limsuperior`).$$
 
-Sobre los 10000 siniestros simulados se considera que aplicarán un deducible de $5,000 y un límite de $30,000. El archivo de indemnizaciones queda de la siguiente manera (primeros 100 datos): 
+\section{Estimación con censura y truncamiento}
+
+\subsection{3.1 Efectos de un deducible y un límite}
+
+Sobre los 10000 siniestros simulados se considera que aplicarán un deducible de $5,000$ y un límite de $30,000$. El archivo de indemnizaciones tendrá, entonces, el siguiente aspecto:
 ```{r montos simulados, echo=FALSE, warning=FALSE}
 ##TRUNCAMIENTO
 Indem<-montos
-for ( i in 1:10000){
-  
-  if(Indem[i]<=5000){
-    Indem[i]=0
+for (i in 1:10000) {
+  if (Indem[i] > 30000) {
+    Indem[i] = 30000
+  } else if (Indem[i] < 5000) {
+    Indem[i] = 0
   }
 }
-  for(i in 1:10000){
-      if(Indem[i]>=30000){
-        Indem[i]=25000
-      }
-  }
 Indemnizacion<-as.data.frame(Indem)
-Indem[1:100]
+#Indem[1:100]
 Indem1<-subset(Indem,Indem !=0)
+
+limite <- 30000
+deducible <- 5000
+fechasModif <- c()
+montosModif <- c()
+fechas <- archivo[[1]]
+montos <- archivo[[2]]
+for (i in 1:length(montos)) {
+  if (montos[i] > limite) {
+    montosModif <- c(montosModif, limite)
+    fechasModif <- c(fechasModif, as.character(fechas[i]))
+  } else if (montos[i] > deducible) {
+    montosModif <- c(montosModif, montos[i])
+    fechasModif <- c(fechasModif, as.character(fechas[i]))
+  }
+}
+archivoModif <- data.frame(fechasModif, montosModif)
+eliminados <- (1-(length(archivoModif[[1]])/length(archivo[[1]])))*100
+eliminadosTeoricos <- pexp(deducible, rate = lambda_exp)*100
+names(archivoModif) <- c("Fechas","Montos")
+primerasModif <- head(archivoModif, 5)
+kable(primerasModif)
 ```
 
-
-La proporción de los datos originales que quedan es de 
-```{r proporcion, echo=FALSE, warning=FALSE}
-length(Indem1)
+$$\vdots$$
+```{r cola archivo modif, echo=FALSE, warning=FALSE}
+ultimasModif <- tail(archivoModif, 5)
+chacadaModif <- data.frame(ultimasModif$Fechas, ultimasModif$Montos)
+names(chacadaModif) <- c("Fechas", "Montos")
+kable(chacadaModif)
 ```
-La estimación analítica de este número se verá más adelante.
 
-\section{3.2 Estimación por máxima verosimilitud del parámetro de la distribución exponencial con la censura y el truncamiento}
+Como resultado de imponer un deducible y un límite, se ha eliminado un  $`r eliminados`\%$ de registros en el archivo de indemnizaciones. Se aceptó la hipótesis de que los montos de los siniestros provienen de una distribución exponencial de media $`r denom`$, entonces se puede estimar de manera anaítica la proporción de registros eliminados mediante la probabilidad de que el monto de un siniestro se encuentre por debajo del deducible de $`r deducible`$. Esta probabilidad es la siguiente:
+$$ Pr\{M\leq `r deducible`\}=1-e^{-\frac{`r deducible`}{`r denom`}}=`r eliminadosTeoricos`.$$
+
+\pagebreak
+
+La nueva seríe de tiempo generada por el proceso de riesgo es la siguiente:
+
+```{r, serie de tiempo con deducible y limite, echo=FALSE, fig.height = 12, fig.width = 10}
+# Ploting time series
+# https://www.neonscience.org/dc-time-series-plot-ggplot-r
+theme <- theme(
+  # Leyend position
+  legend.position = c(1, 0),
+  legend.justification = c("right", "bottom"),
+  legend.box.just = "right",
+  # Legend boxes
+  legend.key = element_rect(colour = 'black', fill = 'transparent', size = .5, linetype=0),
+  legend.key.width = unit(1.5, "lines"),
+  legend.background = element_rect(fill="transparent"),
+  # Center plot title
+  plot.title = element_text(hjust = 0.5),
+  legend.text=element_text(size=8),
+  axis.text.x=element_text(size=14)
+)
+fechonsias <- archivoModif[[1]]
+funciononsia <- function(x) {
+  value <- NA
+  if (match(x,fechonsias) %% 500 !=0) {
+    value <- NA
+  } else {
+    fechaSeparada <- strsplit(as.character(x), " ")
+    value <- fechaSeparada[[1]][1]
+  }
+  value
+}
+fechunias <- sapply(fechonsias, funciononsia)
+montunios <- archivoModif[[2]]
+dfonsio <- data.frame(fechunias, montunios)
+names(dfonsio) <- c("fechonson", "montonson")
+
+ggplot(data = dfonsio, aes(x = c(1:length(dfonsio$montonson)), y = montonson, group = 1)) + 
+geom_bar(stat="identity", color = "#00AFBB", size = .1, alpha=.1, na.rm = TRUE) +
+geom_point(size=.005, color="blue", alpha=0.5) +
+theme(axis.text.x = element_text(angle = 90, hjust = 1, size=5)) + 
+scale_x_discrete(limits=dfonsio[[1]], na.translate = FALSE) + 
+xlab("Fecha") + 
+ylab("Monto") + 
+geom_hline(yintercept=10000, size=1, color="cyan") + 
+coord_flip() +
+scale_y_reverse(limits=c(85000,0)) +
+theme
+```
+
+La línea azul claro indica el valor de la media en exceso con un umbral de $`r deducible`$.
+
+\subsection{3.2 Estimación para montos con deducible y límite}
 
 ```{r estimacion de lambda exponencial, echo=FALSE, warning=FALSE}
 
@@ -1403,7 +1499,8 @@ Después de resolver con Solver en Excel, se obtuvo que el parámetro de la dist
 Analíticamente, la proporción estimada de los siniestros que se consideran indemnizaciones es de $6,821.151$.
 
 
-\section{3.3 Intervalo de confianza para el percentil 95 de la severidad}
+\subsection{3.3 El percentil $95$ de la severidad}
+
 3.3 Construye un intervalo de confianza para el percentil 95 de la severidad. Compara este intervalo con el equivalente en la pregunta 2 y comenta.
 ```{r IC Severidad, echo=FALSE, warning=FALSE} 
 
