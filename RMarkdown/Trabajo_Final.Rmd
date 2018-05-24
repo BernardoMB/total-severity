@@ -6,6 +6,7 @@ output:
   pdf_document: default
   html_document:
     df_print: paged
+  word_document: default
 ---
 
 <!-- Configure R Markdown file -->
@@ -293,6 +294,36 @@ Con valores simulados, se tienen las siguientes estimaciones para la severidad t
 #names(df.values) <- c("Valor","Formula","Estimado","Real")
 #kable(df.values)
 ```
+Estimaciones por Jack Knife
+```{r, echo=FALSE}
+##Media
+JKMean<-NULL
+for(i in 1:10000){
+  JKMean[i]= (sum(severities)-severities[i])/(10000-1)
+}
+JKMean1=mean(JKMean)
+#confint(JKMean,JKMean,level=.95)
+
+##Varianza
+JKVar<-NULL
+for(i in 1:10000){
+  JKVar[i]= (var(severities[-i]))
+}
+JKVar1=mean(JKVar)
+sqrt(JKVar1)
+var(severities)
+
+
+##Sesgo
+JKBias<-NULL
+for(i in 1:10000){
+  JKBias[i]= mean((severities[-i]-mean(severities))^3)
+}
+JKBias1=mean(JKBias)
+
+
+```
+
 
 \subsection{1.4 Aproximación de la distribución de la severidad total}
 
@@ -329,7 +360,7 @@ comp.theme <- theme(
 )
 
 # Title
-comp.title <- ggtitle("Densidad de la severidad total \n vs. \n aproximación Gamma")
+comp.title <- ggtitle("Densidad de la severidad total \n vs. \n aproximacion Gamma")
 
 # Number of different function to be ploted
 types <- c("1","2")
@@ -1475,11 +1506,13 @@ La línea azul claro indica el valor de la media en exceso con un umbral de $`r 
 
 \subsection{3.2 Estimación para montos con deducible y límite}
 Primero vamos a definir la función con el deducible de $5,000$ y un límite de $30,000$
-$$y(x) = \begin{cases}
+$$
+y(x) = \begin{cases}
   0 & x\leq 5,000\\
   x-5000 & 5,000\leq x \leq 30,000\\
   25,000 & 30,000\leq x
-\end{cases}$$
+\end{cases}
+$$
 
 $$F_{Y}(y) = \begin{cases}
  0 & y = 0\\
@@ -1487,16 +1520,13 @@ $$F_{Y}(y) = \begin{cases}
   1  & 900\leq y
 \end{cases}$$
 
-$$f_{Y}(y) = \begin{cases}
- \frac{f_{x}(y + 5000)}{S_{X}(5000)} & 0\leq y \leq 25,000 \\
- 
- \frac{1- F_{x}(25000)}{1-F_{x}(5000)}& y = 25,000\\
 
+$$f_{Y}(y) = \begin{cases}
+ \frac{f_{x}(y + 5000)}{S_{X}(5000)} & 0\leq y \leq 25,000\\
+ \frac{1- F_{x}(25000)}{1-F_{x}(5000)} & y = 25,000
 \end{cases}$$
 
 Un vez teniendo bien definidas funciones de Distribución y Densidad, podemos hacer la función de Máxima Verosimilitud.
-
-
 
 $$L(\lambda) =   \left(\frac{1- F_{x}(25000)}{1- F_{x}(5000)}\right)^a \cdot\prod_{i=1}^b \frac{f_{x}(y_{i} + 5000)}{1-F_{x(5000)}}$$
 
@@ -1539,6 +1569,5 @@ Después de resolver con Solver en Excel, se obtuvo que el parámetro de la dist
 ```{r IC Severidad, echo=FALSE, warning=FALSE} 
 
 ```
-
 
 
